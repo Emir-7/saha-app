@@ -67,4 +67,7 @@
    API Metodu: POST /admin/login
    Açıklama: İşletme sahibinin kendisine özel yönetim paneline erişim sağlamasını sağlar.
 
-   
+   # Gereksinim Dağılımları
+
+1. [Hilmi Sinan Kaplanın Gereksinimleri](Hilmi-Sinan-Kaplanın-Gereksinimleri.md)
+2. [Emirhan Fidanın Gereksinimleri](Emirhan-Fidanın-Gereksinimleri.md)
