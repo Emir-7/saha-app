@@ -1,4 +1,4 @@
-PROJE GEREKSİNİMLERİ VE API DOKÜMANTASYONU
+# Tüm Gereksinimler 
 
 1- Üye Olma (Hilmi Sinan Kaplan)
    API Metodu: POST /auth/register
@@ -66,4 +66,8 @@ PROJE GEREKSİNİMLERİ VE API DOKÜMANTASYONU
 17- Yönetici Paneli Giriş ve Yetkilendirme (Emirhan Fidan)
    API Metodu: POST /admin/login
    Açıklama: İşletme sahibinin kendisine özel yönetim paneline erişim sağlamasını sağlar.
-   
+
+   # Gereksinim Dağılımları
+
+1. [Hilmi Sinan Kaplanın Gereksinimleri](Hilmi-Sinan-Kaplanın-Gereksinimleri.md)
+2. [Emirhan Fidanın Gereksinimleri](Emirhan-Fidanın-Gereksinimleri.md)
