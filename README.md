@@ -54,10 +54,3 @@ Her bir ekip üyesi kendi klasöründe ilgili dökümanları güncellemiştir:
 
 ---
 
-## Kurulum ve Klonlama
-
-### İşbirliği Adımları
-1. **Collaborator Ekleme:** Repo sahibi, ekip arkadaşını "Settings > Collaborators" sekmesinden eklemiştir.
-2. **Klonlama:**
-```bash
-git clone [https://github.com/kullanici-adi/halisaha-pro.git](https://github.com/kullanici-adi/halisaha-pro.git)
