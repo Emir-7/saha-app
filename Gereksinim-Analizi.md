@@ -69,5 +69,5 @@
 
    # Gereksinim Dağılımları
 
-1. [Hilmi Sinan Kaplanın Gereksinimleri](main/Hilmi-Sinan-Kaplan/Hilmi-Sinan-Kaplanın-Gerksinimleri.md)
-2. [Emirhan Fidanın Gereksinimleri](main/Emirhan-Fidan/Emirhan-Fidanın-Gereksinimleri.md)
+1. [Hilmi Sinan Kaplanın Gereksinimleri](Hilmi-Sinan-Kaplan/Hilmi-Sinan-Kaplanın-Gerksinimleri.md)
+2. [Emirhan Fidanın Gereksinimleri](Emirhan-Fidan/Emirhan-Fidanın-Gereksinimleri.md)
