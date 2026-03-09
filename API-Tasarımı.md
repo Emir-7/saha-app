@@ -1,6 +1,6 @@
 # API Tasarımı - OpenAPI Specification (Saha-app)
 
-**OpenAPI Spesifikasyon Dosyası:** [Rest-API.yaml](Rest-API.yaml)
+**OpenAPI Spesifikasyon Dosyası:** [Rest API.yaml](Rest-API.yaml)
 
 Bu doküman, Saha-app Akıllı Halı Saha Rezervasyon ve İşletme Sistemi için OpenAPI Specification (OAS) 3.0 standardına göre hazırlanmış API tasarımını içermektedir.
 
