@@ -1,5 +1,5 @@
 # Saha-app 
- Akıllı Halı Saha Rezervasyon ve İşletme Sistemi
+Akıllı Halı Saha Rezervasyon ve İşletme Sistemi
 
 > **Proje Durumu:** Tasarım Aşamasında / Geliştirilmeye Hazır
 
@@ -7,9 +7,9 @@
 
 ## Proje Hakkında
 
+![Saha-app Tanıtım Görseli](image.png)
 
-
-**Proje Tanımı:** HaliSaha Pro, hem halı saha oyuncuları hem de tesis işletmecileri için geliştirilmiş kapsamlı bir SaaS (Software as a Service) platformudur. Oyuncular için kolayca saha bulma ve anlık rezervasyon yapma imkanı sunarken, işletmeciler için tesislerini dijital ortamda yönetebilecekleri, finansal raporlar alabilecekleri ve doluluk oranlarını takip edebilecekleri gelişmiş bir "Yönetici Paneli" sunar. Sistem, web tabanlı bir merkezi yönetim ve kullanıcı arayüzü ile başlayıp, süreç sonunda mobil uygulama desteği ile tamamlanacaktır.
+**Proje Tanımı:** Saha-app, hem halı saha oyuncuları hem de tesis işletmecileri için geliştirilmiş kapsamlı bir SaaS (Yazılım Hizmeti) platformudur. Oyuncular için şehirdeki uygun sahaları bulma, anlık müsaitlik sorgulama ve hızlı rezervasyon yapma imkanı sunarken; işletmeciler için tesislerini dijital ortamda yönetebilecekleri, finansal raporlar alabilecekleri ve doluluk oranlarını takip edebilecekleri gelişmiş bir "Yönetici Paneli" sunar. Sistem, web tabanlı merkezi yönetim arayüzü ile başlayıp, süreç sonunda mobil uygulama desteği ile tüm platformlarda kesintisiz bir deneyim hedeflemektedir.
 
 **Proje Kategorisi:** SaaS, Rezervasyon Yönetimi, B2B & B2C Platform.
 
@@ -17,12 +17,17 @@
 
 ## Proje Linkleri
 
+- **REST API Adresi:** [api.sahaapp.com](https://api.sahaapp.com)
+- **Web Frontend Adresi:** [sahaapp.vercel.app](https://sahaapp.vercel.app)
+
+---
+
 ## Proje Ekibi
 
 **Grup Adı:** Sahaapp
 
-**Ekip Üyeleri:** - **Emirhan Fidan** (Saha ve İşletme Yönetimi - Admin Panel)
-- **Hilmi Sinan Kaplan** (Kullanıcı İşlemleri ve Rezervasyon Yönetimi)
+**Ekip Üyeleri:** - **Emirhan Fidan:** Saha ve İşletme Yönetimi - Admin Panel
+- **Hilmi Sinan Kaplan:** Kullanıcı İşlemleri ve Rezervasyon Yönetimi
 
 ---
 
@@ -40,17 +45,11 @@ Proje dokümantasyonuna aşağıdaki linklerden erişebilirsiniz:
 
 ---
 
-## Proje Görev Dağılımı ve Gereksinimler
+## Projeyi Klonlama ve Düzenleme
 
-Her bir ekip üyesi kendi klasöründe ilgili dökümanları güncellemiştir:
+### Kendi Reponuzu Oluşturma ve Şablonu Ekleme
 
-### [Hilmi-Sinan-Kaplan/](Hilmi-Sinan-Kaplan/)
-- **Odak Noktası:** Kullanıcı/Oyuncu Arayüzü ve Rezervasyon Akışı
-- **Ana Görevler:** Kayıt/Giriş (Auth), Profil Yönetimi, Rezervasyon Oluşturma/İptal, Maç Geçmişi.
-
-### [Emirhan-Fidan/](Emirhan-Fidan/)
-- **Odak Noktası:** Yönetici Paneli (Admin Dashboard) ve İşletme Yönetimi
-- **Ana Görevler:** Saha Tanımlama, Fiyat/Saat Yönetimi, Rezervasyon Onay/Red, Finansal Raporlama, Veri Moderasyonu.
-
----
-
+**Adım 1: Bu Şablon Repoyu Klonlama**
+1. Saha-app şablon reposunu yerel bilgisayarınıza klonlayın:
+```bash
+git clone [https://github.com/Emir-7/saha-app](https://github.com/Emir-7/saha-app)
