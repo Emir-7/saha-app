@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  mongodb_kapsayici:
+    image: mongo:latest
+    container_name: mongodb_kapsayici
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  sahaapp_api:
+    build:
+      context: ./rest-api
+    container_name: sahaapp_api
+    ports:
+      - "9000:9000"
+    environment:
+      - MONGO_URI=mongodb://mongodb_kapsayici:27017/SahaAppDB
+      - PORT=9000
+    depends_on:
+      - mongodb_kapsayici
+
+  sahaapp_web:
+    build:
+      context: ./saha-app-web
+    container_name: sahaapp_web
+    ports:
+      - "3000:80"
+    depends_on:
+      - sahaapp_api
+
+volumes:
+  mongodb_data:

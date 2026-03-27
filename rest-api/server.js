@@ -1,0 +1,22 @@
+const express = require('express');
+const cors = require('cors');
+
+// Veritabanı bağlantısı ve Mongoose modellerini projeye dahil et
+require('./app_api/models/db');
+
+// Rota (Router) tanımlamalarını içe aktar
+const routesApi = require('./app_api/routes/index');
+
+const app = express();
+
+app.use(express.json());
+app.use(cors());
+
+// Yönlendirme (Router) kullanımı
+app.use('/api', routesApi);
+
+const PORT = process.env.PORT || 9000;
+
+app.listen(PORT, () => {
+  console.log(`Saha-App API ${PORT} portunda başarıyla çalışıyor.`);
+});
