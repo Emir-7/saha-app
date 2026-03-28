@@ -10,7 +10,7 @@ const routesApi = require('./app_api/routes/index');
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors()); // Frontend (3000) bağlantısı için kritik!
 
 // Yönlendirme (Router) kullanımı
 app.use('/api', routesApi);
