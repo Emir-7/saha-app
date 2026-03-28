@@ -5,11 +5,14 @@ function App() {
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        // Port 9000'e yapacağımız istek
-        fetch('http://localhost:9000/api/status')
-            .then((res) => res.json())
+        // Port 9000'e yapacağımız istek (Backend'te tanımlı olan "/api/fields" endpointini kullanıyoruz)
+        fetch('http://localhost:9000/api/fields')
+            .then((res) => {
+                if (!res.ok) throw new Error('Sunucudan hatalı yanıt geldi');
+                return res.json();
+            })
             .then((data) => {
-                setApiStatus(data.status);
+                setApiStatus('Bağlantı Başarılı! (✓) API Ayakta');
                 setError(false);
             })
             .catch((err) => {

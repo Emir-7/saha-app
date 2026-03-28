@@ -1,23 +1,26 @@
 const mongoose = require('mongoose');
 
-// docker-compose ortam değişkeni veya varsayılan bağlantı adresi (mongodb_kapsayici)
-const dbURI = process.env.MONGO_URI || 'mongodb://mongodb_kapsayici:27017/SahaAppDB';
+// --- KRİTİK DEĞİŞİKLİK BURASI ---
+// Eğer Render daki MONGODB_URI varsa onu kullan, yoksa local Docker adresiyle devam et.
+const dbURI = process.env.MONGODB_URI || 'mongodb://mongodb_kapsayici:27017/SahaAppDB';
 
-mongoose.connect(dbURI)
-    .catch((err) => console.error('MongoDB bağlantı hatası:', err));
+console.log("Bağlanılmaya çalışılan adres:", dbURI.includes("mongodb+srv") ? "Canlı MongoDB (Atlas)" : "Yerel Docker");
 
-// Mongoose olay (event) dinleyicileri
+mongoose.connect(dbURI);
+
 mongoose.connection.on('connected', () => {
-    console.log(`Mongoose ${dbURI} adresine başarıyla bağlandı`);
-});
-mongoose.connection.on('error', err => {
-    console.log(`Mongoose bağlantı hatası: ${err}`);
-});
-mongoose.connection.on('disconnected', () => {
-    console.log('Mongoose bağlantısı kesildi');
+    console.log('✅ Veritabanı bağlantısı başarıyla kuruldu.');
 });
 
-// Şemaları (Modelleri) projeye dahil et
-require('./user');
+mongoose.connection.on('error', (err) => {
+    console.log('❌ Veritabanı bağlantı hatası: ' + err);
+});
+
+mongoose.connection.on('disconnected', () => {
+    console.log('⚠️ Veritabanı bağlantısı kesildi.');
+});
+
+// Modelleri dahil et
 require('./field');
+require('./user');
 require('./booking');
