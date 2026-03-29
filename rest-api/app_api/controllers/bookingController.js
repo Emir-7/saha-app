@@ -62,8 +62,36 @@ const cancelBooking = async (req, res) => {
     }
 };
 
+// 14 - Rezervasyon Onayı (Emirhan Fidan)
+const confirmBooking = async (req, res) => {
+    try {
+        const { bookingId } = req.params;
+        const { status } = req.body; // 'Onaylandı' veya 'İptal Edildi'
+
+        const validStatuses = ['Onay Bekliyor', 'Onaylandı', 'İptal Edildi'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ error: 'Geçersiz rezervasyon durumu.' });
+        }
+
+        const updatedBooking = await Booking.findByIdAndUpdate(
+            bookingId,
+            { status: status },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedBooking) {
+            return res.status(404).json({ error: 'Güncellenecek rezervasyon bulunamadı.' });
+        }
+
+        res.status(200).json({ message: 'Rezervasyon durumu güncellendi.', booking: updatedBooking });
+    } catch (error) {
+        res.status(500).json({ error: 'Rezervasyon onaylanırken hata oluştu.', details: error.message });
+    }
+};
+
 module.exports = {
     createBooking,
     listUserBookings,
-    cancelBooking
+    cancelBooking,
+    confirmBooking
 };

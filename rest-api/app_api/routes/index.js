@@ -1,30 +1,39 @@
 const express = require('express');
 const router = express.Router();
 
-const ctrlAuth = require('../controllers/authController');
-const ctrlBooking = require('../controllers/bookingController');
+// Controller dosyalarını içeri dahil et
 const ctrlSaha = require('../controllers/sahaController');
 const ctrlAdmin = require('../controllers/adminController');
 
-// --- HİLMİ SİNAN KAPLAN (1-8) ---
-router.post('/auth/register', ctrlAuth.register);       // 1. Kayıt
-router.post('/auth/login', ctrlAuth.login);             // 2. Giriş
-router.get('/users/:userId', ctrlAuth.getProfile);      // 3. Profil
-router.put('/users/:userId', ctrlAuth.updateProfile);   // 4. Güncelleme
-router.patch('/users/:userId/password', ctrlAuth.changePassword); // 5. Şifre
-router.post('/bookings', ctrlBooking.createBooking);    // 6. Rezervasyon
-router.delete('/bookings/:bookingId', ctrlBooking.cancelBooking); // 7. İptal
-router.get('/users/:userId/bookings', ctrlBooking.listUserBookings); // 8. Randevu Listesi
+// -------------------------------------------------------------
+// Saha İşlemleri - Emirhan Fidan Sorumlulukları (sahaController)
+// -------------------------------------------------------------
+router.get('/fields', ctrlSaha.listFields);               // 9. Sahaları listeleme
+router.get('/fields/:fieldId', ctrlSaha.getField);        // 10. Detay görüntüleme
+router.post('/fields', ctrlSaha.addField);                // 11. Yeni saha ekleme
+router.put('/fields/:fieldId', ctrlSaha.updateField);     // 12. Güncelleme
+router.delete('/fields/:fieldId', ctrlSaha.deleteField);  // 13. Silme
 
+<<<<<<< Updated upstream
+// -------------------------------------------------------------
+// Admin İşlemleri - Emirhan Fidan Sorumlulukları (adminController)
+// -------------------------------------------------------------
+router.get('/fields/:fieldId/availability', ctrlAdmin.checkAvailability); // 14. Müsaitlik sorgulama
+router.get('/admin/reports', ctrlAdmin.getReports);                       // 15. Günlük/Aylık Gelir raporu
+router.post('/admin/login', ctrlAdmin.adminLogin);                        // 16. Admin girişi
+router.patch('/admin/:adminId/password', ctrlAdmin.adminChangePassword);  // 17. Admin şifre değiştirme
+=======
 // --- EMİRHAN FİDAN (9-17) ---
-router.get('/fields', ctrlSaha.listFields);             // 9. Sahaları Listele
-router.get('/fields/:fieldId', ctrlSaha.getField);      // 10. Detay
-router.post('/fields', ctrlSaha.addField);              // 11. Yeni Saha Ekle
-router.put('/fields/:fieldId', ctrlSaha.updateField);   // 12. Güncelleme
-router.delete('/fields/:fieldId', ctrlSaha.deleteField); // 13. Silme
-router.get('/fields/:fieldId/availability', ctrlAdmin.checkAvailability); // 14. Müsaitlik
-router.get('/admin/reports', ctrlAdmin.getReports);     // 15. Gelir Raporu
-router.post('/admin/login', ctrlAdmin.adminLogin);      // 16. Admin Girişi
-router.patch('/admin/:adminId/password', ctrlAdmin.adminChangePassword); // 17. Şifre Değişimi
+router.get('/fields', ctrlSaha.listFields);                               // 9. Sahaları Listele
+router.get('/fields/:fieldId', ctrlSaha.getField);                        // 10. Detay
+router.post('/fields', ctrlSaha.addField);                                // 11. Yeni Saha Ekle
+router.put('/fields/:fieldId', ctrlSaha.updateField);                     // 12. Saha bilgisi güncelleme
+router.delete('/fields/:fieldId', ctrlSaha.deleteField);                  // (Ekstra) Saha Silme
+router.get('/fields/:fieldId/availability', ctrlAdmin.checkAvailability); // 13. Müsaitlik sorgulama
+router.patch('/bookings/:bookingId/confirm', ctrlBooking.confirmBooking); // 14. Rezervasyon onayı
+router.get('/admin/reports', ctrlAdmin.getReports);                       // 15. Finansal rapor
+router.post('/support/tickets', ctrlAdmin.createTicket);                  // 16. Destek talebi
+router.post('/admin/login', ctrlAdmin.adminLogin);                        // 17. Admin girişi
+>>>>>>> Stashed changes
 
 module.exports = router;

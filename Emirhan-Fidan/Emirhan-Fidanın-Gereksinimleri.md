@@ -1,37 +1,21 @@
-### 🏟️ Saha Yönetimi ve İşletme Paneli (Emirhan Fidan)
+# Emirhan Fidanın Gereksinimleri (9-17)
 
-9. **Sahaları Listeleme**
-   - **API Metodu:** `GET /fields`
-   - **Açıklama:** Sistemdeki tüm halı sahaların isim, konum ve genel özelliklerine göre bir liste halinde sunulmasını sağlar.
+Bu doküman, Saha-App projesinin 3. ve 4. aşamaları kapsamında Emirhan Fidan tarafından geliştirilen REST API noktalarını ve Frontend gereksinimlerini listelemektedir. Tüm API istekleri `https://saha-app.onrender.com/api` adresine yapılmaktadır.
 
-10. **Saha Bilgisi İnceleme**
-    - **API Metodu:** `GET /fields/{fieldId}`
-    - **Açıklama:** Seçilen bir sahanın fotoğrafları, ücreti, konumu ve sunduğu ek imkanlar (duş, otopark vb.) hakkında detaylı bilgi verir.
+| No | İşlem Adı | HTTP Metodu | Route (Endpoint) | Açıklama |
+| --- | --- | --- | --- | --- |
+| 9 | Sahaları Listeleme | `GET` | `/fields` | Sistemdeki tüm sahaları listeler. |
+| 10 | Detay Görüntüleme | `GET` | `/fields/:fieldId` | ID'si verilen özel bir sahanın bilgilerini getirir. |
+| 11 | Yeni Saha Ekleme | `POST` | `/fields` | Yeni bir saha kaydı oluşturur (Sadece admin paneli). |
+| 12 | Saha Güncelleme | `PUT` | `/fields/:fieldId` | Mevcut bir sahanın fiyat, adres vb. bilgilerini günceller. |
+| 13 | Müsaitlik Sorgulama | `GET` | `/fields/:fieldId/availability`| İlgili sahanın rezervasyon müsaitlik durumunu döndürür. |
+| 14 | Rezervasyon Onayı | `PATCH` | `/bookings/:bookingId/confirm`| Adminin gelen bir rezervasyon talebini onaylamasını veya reddetmesini sağlar. |
+| 15 | Finansal Rapor | `GET` | `/admin/reports` | Tüm onaylı rezervasyonlar üzerinden toplam hesaplanan günlük/aylık gelir grafikleri için veri sağlar. |
+| 16 | Destek Talebi | `POST` | `/support/tickets` | Kullanıcıların sorun bildirmesi veya yardım istemesi için `Ticket` oluşturur. |
+| 17 | Admin Girişi | `POST` | `/admin/login` | Yönetici paneline erişim için yetkilendirme sağlar. |
 
-11. **Yeni Saha Tanımlama**
-    - **API Metodu:** `POST /fields`
-    - **Açıklama:** İşletme sahibinin yeni bir halı saha birimini, çalışma saatlerini ve teknik detaylarını sisteme eklemesini sağlar.
+### Ek Olarak Geliştirilenler
 
-12. **Saha Bilgisi Güncelleme**
-    - **API Metodu:** `PUT /fields/{fieldId}`
-    - **Açıklama:** Mevcut bir sahanın fiyatında, açıklamasında veya sunduğu imkanlarda değişiklik yapılmasına izin verir.
-
-13. **Boş Saatleri Sorgulama**
-    - **API Metodu:** `GET /fields/{fieldId}/availability`
-    - **Açıklama:** Belirli bir tarihte sahanın hangi saat dilimlerinin boş olduğunu bir takvim üzerinde kontrol etmeyi sağlar.
-
-14. **Randevu Yönetme**
-    - **API Metodu:** `PATCH /bookings/{bookingId}/confirm`
-    - **Açıklama:** İşletmecinin, kullanıcılardan gelen randevu isteklerini inceleyerek onaylamasına veya reddetmesine imkan tanır.
-
-15. **Gelir Raporu Alma**
-    - **API Metodu:** `GET /admin/reports`
-    - **Açıklama:** İşletmecinin günlük veya aylık bazda ne kadar kazanç elde ettiğini ve sahaların doluluk oranlarını görmesini sağlar.
-
-16. **Destek Talebi Açma**
-    - **API Metodu:** `POST /support/tickets`
-    - **Açıklama:** Kullanıcıların sistem veya sahalarla ilgili yaşadıkları sorunları yetkililere iletebileceği bir mesaj alanı sağlar.
-
-17. **Yönetici Girişi Yapma**
-    - **API Metodu:** `POST /admin/login`
-    - **Açıklama:** İşletme sahiplerinin sadece kendilerine ait olan yönetim paneline erişebilmesi için kullanılan giriş yöntemidir.
+*   **Saha Silme**: `DELETE /fields/:fieldId` -> Yanlış girilen sahaları panelden kalıcı olarak kaldırmak için.
+*   **Ticket Modeli**: Mongoose üzerinde Destek Talebi işlemleri için oluşturulmuştur.
+*   **Arayüz (Dashboard)**: Gelir, kayıtlı saha sayısı, API destekli saha ekleme/silme özelliklerine sahip `AdminDashboard.jsx` geliştirilmiştir.

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Booking = mongoose.model('Booking');
 const User = mongoose.model('User');
 const Field = mongoose.model('Field');
+const Ticket = mongoose.model('Ticket');
 
 // 14 - Saha müsaitlik sorgulama
 const checkAvailability = async (req, res) => {
@@ -96,9 +97,27 @@ const adminChangePassword = async (req, res) => {
     }
 };
 
+// 16 - Destek talebi
+const createTicket = async (req, res) => {
+    try {
+        const { user, subject, message } = req.body;
+        
+        const newTicket = await Ticket.create({
+            user,
+            subject,
+            message
+        });
+
+        res.status(201).json({ message: 'Destek talebiniz başarıyla oluşturuldu.', ticket: newTicket });
+    } catch (error) {
+        res.status(500).json({ error: 'Destek talebi oluşturulurken hata oluştu.', details: error.message });
+    }
+};
+
 module.exports = {
     checkAvailability,
     getReports,
     adminLogin,
-    adminChangePassword
+    adminChangePassword,
+    createTicket
 };

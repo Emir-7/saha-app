@@ -1,29 +1,22 @@
 const express = require('express');
 const cors = require('cors');
 
-// Veritabanı bağlantısı ve modelleri dahil et
+// Veritabanı bağlantısı ve Mongoose modellerini projeye dahil et
 require('./app_api/models/db');
 
-// Rota tanımlamalarını içe aktar
+// Rota (Router) tanımlamalarını içe aktar
 const routesApi = require('./app_api/routes/index');
 
 const app = express();
 
-// --- KRİTİK AYARLAR ---
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 
-// CORS Ayarları (Frontend portu 3000 için özel olarak yapılandırıldı)
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-// API Yönlendirmesi
+// Yönlendirme (Router) kullanımı
 app.use('/api', routesApi);
 
 const PORT = process.env.PORT || 9000;
+
 app.listen(PORT, () => {
-  console.log(`🚀 Saha-App API ${PORT} portunda başarıyla çalışıyor.`);
+  console.log(`Saha-App API ${PORT} portunda başarıyla çalışıyor.`);
 });
