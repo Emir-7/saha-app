@@ -19,10 +19,6 @@ mongoose.connection.on('disconnected', () => {
 
 // Şemaları (Modelleri) projeye dahil et
 require('./user');
-<<<<<<< Updated upstream
 require('./field');
 require('./booking');
-=======
-require('./booking');
 require('./ticket');
->>>>>>> Stashed changes

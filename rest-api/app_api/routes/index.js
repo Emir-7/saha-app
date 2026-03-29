@@ -14,15 +14,8 @@ router.post('/fields', ctrlSaha.addField);                // 11. Yeni saha eklem
 router.put('/fields/:fieldId', ctrlSaha.updateField);     // 12. Güncelleme
 router.delete('/fields/:fieldId', ctrlSaha.deleteField);  // 13. Silme
 
-<<<<<<< Updated upstream
-// -------------------------------------------------------------
-// Admin İşlemleri - Emirhan Fidan Sorumlulukları (adminController)
-// -------------------------------------------------------------
-router.get('/fields/:fieldId/availability', ctrlAdmin.checkAvailability); // 14. Müsaitlik sorgulama
-router.get('/admin/reports', ctrlAdmin.getReports);                       // 15. Günlük/Aylık Gelir raporu
-router.post('/admin/login', ctrlAdmin.adminLogin);                        // 16. Admin girişi
-router.patch('/admin/:adminId/password', ctrlAdmin.adminChangePassword);  // 17. Admin şifre değiştirme
-=======
+const ctrlBooking = require('../controllers/bookingController');
+
 // --- EMİRHAN FİDAN (9-17) ---
 router.get('/fields', ctrlSaha.listFields);                               // 9. Sahaları Listele
 router.get('/fields/:fieldId', ctrlSaha.getField);                        // 10. Detay
@@ -34,6 +27,5 @@ router.patch('/bookings/:bookingId/confirm', ctrlBooking.confirmBooking); // 14.
 router.get('/admin/reports', ctrlAdmin.getReports);                       // 15. Finansal rapor
 router.post('/support/tickets', ctrlAdmin.createTicket);                  // 16. Destek talebi
 router.post('/admin/login', ctrlAdmin.adminLogin);                        // 17. Admin girişi
->>>>>>> Stashed changes
 
 module.exports = router;
