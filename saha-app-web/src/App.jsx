@@ -5,8 +5,8 @@ function App() {
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        // Port 9000'e yapacağımız istek (Backend'te tanımlı olan "/api/fields" endpointini kullanıyoruz)
-        fetch('http://localhost:9000/api/fields')
+        // Canlı Render platformuna yapacağımız istek (Backend'te tanımlı olan "/api/fields" endpointini kullanıyoruz)
+        fetch('https://saha-app.onrender.com/api/fields')
             .then((res) => {
                 if (!res.ok) throw new Error('Sunucudan hatalı yanıt geldi');
                 return res.json();
@@ -42,7 +42,7 @@ function App() {
                 </p>
 
                 <p style={{ fontSize: '18px' }}>
-                    <strong>Backend (API) (Port 9000):</strong> <span style={{ color: error ? '#c0392b' : '#27ae60' }}>{apiStatus}</span>
+                    <strong>Backend (API) (Canlı - Render):</strong> <span style={{ color: error ? '#c0392b' : '#27ae60' }}>{apiStatus}</span>
                 </p>
             </div>
         </div>
