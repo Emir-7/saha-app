@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // CORS Ayarları (Frontend portu 3000 için özel olarak yapılandırıldı)
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
