@@ -1,5 +1,5 @@
-export const BASE_URL = 'https://saha-app.onrender.com/api';
-
+// Geliştirici (Lokal) API URL'si
+export const BASE_URL = 'http://localhost:9000/api';
 // İsteğe bağlı merkezi bir fetch veya axios yapısı kurabiliriz
 export const fetchApi = async (endpoint, options = {}) => {
     try {
