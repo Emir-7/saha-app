@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchApi } from '../utils/api';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Trash2, PlusCircle, DollarSign, List, ShieldAlert, CheckCircle, XCircle, Users } from 'lucide-react';
+import { Trash2, PlusCircle, DollarSign, List, ShieldAlert, CheckCircle, XCircle, Users, Edit2, X, Save } from 'lucide-react';
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('command-center');
@@ -11,6 +11,12 @@ const AdminDashboard = () => {
     const [loading, setLoading] = useState(true);
 
     const [newField, setNewField] = useState({ name: '', address: '', pricePerHour: '', imageUrl: '' });
+
+    // REQ-12: Düzenleme modal state'leri
+    const [editingField, setEditingField] = useState(null); // Düzenlenen saha objesi
+    const [editForm, setEditForm] = useState({ name: '', address: '', pricePerHour: '', features: '' });
+    const [editLoading, setEditLoading] = useState(false);
+    const [editSuccess, setEditSuccess] = useState(false);
 
     const loadData = async () => {
         try {
@@ -44,7 +50,6 @@ const AdminDashboard = () => {
                 method: 'PATCH',
                 body: JSON.stringify({ status })
             });
-            // İşlem bitince verileri tazeleyip listeyi ve gelir barını güncelliyoruz
             loadData();
         } catch (error) {
             alert("İşlem sırasında hata oluştu: " + error.message);
@@ -75,6 +80,48 @@ const AdminDashboard = () => {
         }
     };
 
+    // REQ-12: Düzenleme modalını aç
+    const handleEditOpen = (field) => {
+        setEditingField(field);
+        setEditSuccess(false);
+        setEditForm({
+            name: field.name || '',
+            address: field.address || '',
+            pricePerHour: field.pricePerHour || '',
+            features: (field.features || []).join(', ')
+        });
+    };
+
+    // REQ-12: Saha Bilgisi Güncelleme (PUT /api/fields/:fieldId)
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+        setEditLoading(true);
+        try {
+            const payload = {
+                name: editForm.name,
+                address: editForm.address,
+                pricePerHour: Number(editForm.pricePerHour),
+                features: editForm.features
+                    ? editForm.features.split(',').map(f => f.trim()).filter(Boolean)
+                    : []
+            };
+            await fetchApi(`/fields/${editingField._id}`, {
+                method: 'PUT',
+                body: JSON.stringify(payload)
+            });
+            setEditSuccess(true);
+            loadData();
+            setTimeout(() => {
+                setEditingField(null);
+                setEditSuccess(false);
+            }, 1200);
+        } catch (error) {
+            alert("Güncelleme hatası: " + error.message);
+        } finally {
+            setEditLoading(false);
+        }
+    };
+
     if (loading) return <div style={{textAlign: 'center', marginTop: '100px', fontSize: '18px', color: '#64748b'}}>Güvenli Yönetim Paneli Yükleniyor...</div>;
 
     const chartData = [
@@ -92,6 +139,96 @@ const AdminDashboard = () => {
     return (
         <div style={{ fontFamily: 'Inter, sans-serif', maxWidth: '1200px', margin: '0 auto', minHeight: '100vh', padding: '20px 0' }}>
             
+            {/* REQ-12: Düzenleme Modalı */}
+            {editingField && (
+                <div style={{
+                    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    zIndex: 1000, backdropFilter: 'blur(4px)'
+                }}>
+                    <div style={{
+                        background: 'white', borderRadius: '16px', padding: '32px',
+                        width: '100%', maxWidth: '480px', boxShadow: '0 25px 50px rgba(0,0,0,0.2)',
+                        animation: 'none'
+                    }}>
+                        {/* Modal Başlık */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                            <div>
+                                <h3 style={{ margin: 0, color: '#0f172a', fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Edit2 size={20} color="#3b82f6" /> Saha Bilgilerini Düzenle
+                                </h3>
+                                <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: '13px' }}>{editingField.name}</p>
+                            </div>
+                            <button
+                                onClick={() => setEditingField(null)}
+                                style={{ background: '#f1f5f9', border: 'none', borderRadius: '8px', padding: '8px', cursor: 'pointer', display: 'flex' }}
+                            >
+                                <X size={18} color="#64748b" />
+                            </button>
+                        </div>
+
+                        {/* Başarı mesajı */}
+                        {editSuccess && (
+                            <div style={{ background: '#dcfce7', color: '#15803d', padding: '12px 16px', borderRadius: '8px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
+                                <CheckCircle size={18} /> Saha başarıyla güncellendi!
+                            </div>
+                        )}
+
+                        <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <div>
+                                <label style={modalLabelStyle}>Saha Adı</label>
+                                <input
+                                    type="text" required style={modalInputStyle}
+                                    value={editForm.name}
+                                    onChange={e => setEditForm({ ...editForm, name: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label style={modalLabelStyle}>Saatlik Ücret (₺)</label>
+                                <input
+                                    type="number" required min="0" style={modalInputStyle}
+                                    value={editForm.pricePerHour}
+                                    onChange={e => setEditForm({ ...editForm, pricePerHour: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label style={modalLabelStyle}>Adres</label>
+                                <input
+                                    type="text" style={modalInputStyle}
+                                    value={editForm.address}
+                                    onChange={e => setEditForm({ ...editForm, address: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label style={modalLabelStyle}>Özellikler (virgülle ayırın)</label>
+                                <input
+                                    type="text" style={modalInputStyle}
+                                    placeholder="Örn: Duş, Otopark, Kafeterya"
+                                    value={editForm.features}
+                                    onChange={e => setEditForm({ ...editForm, features: e.target.value })}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingField(null)}
+                                    style={{ flex: 1, padding: '12px', background: '#f1f5f9', color: '#64748b', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+                                >
+                                    Vazgeç
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={editLoading}
+                                    style={{ flex: 2, padding: '12px', background: editLoading ? '#93c5fd' : '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: editLoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                                >
+                                    <Save size={16} /> {editLoading ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
             {/* Yönetici Menüsü (Sekmeler) */}
             <div style={{ display: 'flex', gap: '20px', borderBottom: '1px solid #e2e8f0', marginBottom: '30px' }}>
                 <button style={tabBtnStyle('command-center')} onClick={() => setActiveTab('command-center')}>
@@ -198,18 +335,40 @@ const AdminDashboard = () => {
                             </div>
                         </div>
 
+                        {/* REQ-12: Aktif Sahalar - Düzenle + Sil butonları */}
                         <div style={{ flex: 1, backgroundColor: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', alignSelf: 'flex-start' }}>
                             <h3 style={{ marginBottom: '20px', color: '#334155' }}>Aktif Sahalar ({fields.length})</h3>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                 {fields.map(field => (
-                                    <div key={field._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
+                                    <div key={field._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px', border: '1px solid #e2e8f0', borderRadius: '8px', transition: 'box-shadow 0.2s' }} onMouseEnter={e => e.currentTarget.style.boxShadow='0 4px 12px rgba(0,0,0,0.06)'} onMouseLeave={e => e.currentTarget.style.boxShadow='none'}>
                                         <div>
                                             <h4 style={{ margin: 0, color: '#0f172a', fontSize: '16px' }}>{field.name}</h4>
-                                            <p style={{ margin: '5px 0 0 0', color: '#64748b', fontSize: '14px' }}>{field.pricePerHour} ₺/Saat</p>
+                                            <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: '14px' }}>{field.pricePerHour} ₺/Saat</p>
+                                            {field.features?.length > 0 && (
+                                                <p style={{ margin: '4px 0 0 0', color: '#94a3b8', fontSize: '12px' }}>
+                                                    🏷️ {field.features.join(', ')}
+                                                </p>
+                                            )}
                                         </div>
-                                        <button onClick={() => handleDelete(field._id)} style={{ backgroundColor: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                            <Trash2 size={16} /> Sil
-                                        </button>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            {/* REQ-12: Düzenle Butonu */}
+                                            <button
+                                                onClick={() => handleEditOpen(field)}
+                                                style={{ backgroundColor: '#eff6ff', color: '#3b82f6', border: '1px solid #bfdbfe', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 'bold', fontSize: '14px', transition: 'all 0.2s' }}
+                                                onMouseEnter={e => e.currentTarget.style.background='#dbeafe'}
+                                                onMouseLeave={e => e.currentTarget.style.background='#eff6ff'}
+                                            >
+                                                <Edit2 size={15} /> Düzenle
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(field._id)}
+                                                style={{ backgroundColor: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s' }}
+                                                onMouseEnter={e => e.currentTarget.style.background='#fee2e2'}
+                                                onMouseLeave={e => e.currentTarget.style.background='#fef2f2'}
+                                            >
+                                                <Trash2 size={15} /> Sil
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -222,5 +381,7 @@ const AdminDashboard = () => {
 };
 
 const inputStyle = { padding: '14px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', fontSize: '15px' };
+const modalInputStyle = { width: '100%', padding: '12px 14px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '15px', color: '#1e293b', boxSizing: 'border-box', outline: 'none' };
+const modalLabelStyle = { display: 'block', marginBottom: '6px', color: '#475569', fontWeight: 'bold', fontSize: '13px' };
 
 export default AdminDashboard;

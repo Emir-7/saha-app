@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Key, CalendarClock, History, Settings, X, CheckCircle, CreditCard, ChevronDown } from 'lucide-react';
+import { User, Key, CalendarClock, History, Settings, X, CheckCircle, CreditCard, ChevronDown, LifeBuoy, Send } from 'lucide-react';
 import { fetchApi } from '../utils/api';
 
 const UserProfile = ({ session }) => {
@@ -16,6 +16,10 @@ const UserProfile = ({ session }) => {
     const [profileForm, setProfileForm] = useState({ firstName: '', lastName: '', phone: '' });
     const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '' });
     const [bookingForm, setBookingForm] = useState({ field: '', date: '', timeSlot: '' });
+
+    // REQ-16: Destek Talebi Form State
+    const [ticketForm, setTicketForm] = useState({ subject: '', message: '' });
+    const [ticketLoading, setTicketLoading] = useState(false);
 
     // Verileri Yükle
     useEffect(() => {
@@ -86,9 +90,8 @@ const UserProfile = ({ session }) => {
                 body: JSON.stringify({ ...bookingForm, user: session.userId })
             });
             showAlert(newBooking.message);
-            setBookingForm({ field: '', date: '', timeSlot: '' }); // Reset
+            setBookingForm({ field: '', date: '', timeSlot: '' });
             
-            // Listeyi yenile
             const freshBookings = await fetchApi(`/users/${session.userId}/bookings`);
             setBookings(freshBookings);
             setActiveTab('bookings');
@@ -108,6 +111,28 @@ const UserProfile = ({ session }) => {
             setBookings(bookings.filter(b => b._id !== bookingId));
         } catch (err) {
             showAlert(err.message, 'error');
+        }
+    };
+
+    // REQ-16: Destek Talebi Gönderme (POST /api/support/tickets)
+    const handleTicketSubmit = async (e) => {
+        e.preventDefault();
+        setTicketLoading(true);
+        try {
+            const res = await fetchApi('/support/tickets', {
+                method: 'POST',
+                body: JSON.stringify({
+                    user: session.userId,
+                    subject: ticketForm.subject,
+                    message: ticketForm.message
+                })
+            });
+            showAlert(res.message || 'Destek talebiniz başarıyla iletildi!');
+            setTicketForm({ subject: '', message: '' });
+        } catch (err) {
+            showAlert(err.message || 'Talep gönderilemedi.', 'error');
+        } finally {
+            setTicketLoading(false);
         }
     };
 
@@ -152,6 +177,8 @@ const UserProfile = ({ session }) => {
                     <button style={navBtnStyle('new-booking')} onClick={() => setActiveTab('new-booking')}><CalendarClock size={18}/> Saha Kirala</button>
                     <button style={navBtnStyle('profile')} onClick={() => setActiveTab('profile')}><Settings size={18}/> Profil Ayarları</button>
                     <button style={navBtnStyle('security')} onClick={() => setActiveTab('security')}><Key size={18}/> Şifre Değiştir</button>
+                    {/* REQ-16: Destek Talebi sekmesi */}
+                    <button style={navBtnStyle('support')} onClick={() => setActiveTab('support')}><LifeBuoy size={18}/> Destek Talebi</button>
                 </div>
 
                 <div style={{ padding: '30px' }}>
@@ -269,6 +296,73 @@ const UserProfile = ({ session }) => {
                                     <input type="password" value={passwordForm.newPassword} onChange={e => setPasswordForm({...passwordForm, newPassword: e.target.value})} style={inputStyle} required minLength="6"/>
                                 </div>
                                 <button type="submit" style={{...btnPrimary, background: '#f59e0b', color: 'white'}}>Güvenli Olarak Şifreyi Güncelle</button>
+                            </form>
+                        </div>
+                    )}
+
+                    {/* TAB: REQ-16 Destek Talebi */}
+                    {activeTab === 'support' && (
+                        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+                            <div style={{ marginBottom: '24px' }}>
+                                <h2 style={{ fontSize: '20px', margin: '0 0 8px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <LifeBuoy color="#3b82f6" size={22}/> Destek Merkezi
+                                </h2>
+                                <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>
+                                    Bir sorun mu yaşıyorsunuz? Bize bildirin, en kısa sürede geri dönelim.
+                                </p>
+                            </div>
+
+                            {/* Bilgi kartları */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '28px' }}>
+                                {[
+                                    { emoji: '⚡', title: 'Hızlı Yanıt', desc: 'Ortalama 24 saat' },
+                                    { emoji: '🔒', title: 'Güvenli', desc: 'Şifreli iletişim' },
+                                    { emoji: '🎯', title: 'Çözüm Odaklı', desc: 'Uzman destek ekibi' }
+                                ].map((item, i) => (
+                                    <div key={i} style={{ background: '#f8fafc', padding: '16px', borderRadius: '10px', textAlign: 'center', border: '1px solid #e2e8f0' }}>
+                                        <div style={{ fontSize: '24px', marginBottom: '6px' }}>{item.emoji}</div>
+                                        <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#334155' }}>{item.title}</div>
+                                        <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>{item.desc}</div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <form onSubmit={handleTicketSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                                <div>
+                                    <label style={labelStyle}>Konu Başlığı *</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Örn: Rezervasyon iptali yapılamıyor"
+                                        required
+                                        value={ticketForm.subject}
+                                        onChange={e => setTicketForm({ ...ticketForm, subject: e.target.value })}
+                                        style={{ ...inputStyle, width: '100%', boxSizing: 'border-box' }}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={labelStyle}>Mesajınız *</label>
+                                    <textarea
+                                        placeholder="Yaşadığınız sorunu veya talebinizi detaylı bir şekilde açıklayın..."
+                                        required
+                                        rows={5}
+                                        value={ticketForm.message}
+                                        onChange={e => setTicketForm({ ...ticketForm, message: e.target.value })}
+                                        style={{ ...inputStyle, width: '100%', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit' }}
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={ticketLoading}
+                                    style={{
+                                        ...btnPrimary,
+                                        background: ticketLoading ? '#93c5fd' : '#3b82f6',
+                                        cursor: ticketLoading ? 'not-allowed' : 'pointer',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                                    }}
+                                >
+                                    <Send size={18} />
+                                    {ticketLoading ? 'Gönderiliyor...' : 'Destek Talebi Gönder'}
+                                </button>
                             </form>
                         </div>
                     )}
