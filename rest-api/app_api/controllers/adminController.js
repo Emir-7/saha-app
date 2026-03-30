@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs'); // Emirhan Fidan 17. Gereksinim Güvenliği
 const Booking = mongoose.model('Booking');
 const User = mongoose.model('User');
 const Field = mongoose.model('Field');
@@ -61,8 +62,9 @@ const adminLogin = async (req, res) => {
             return res.status(404).json({ error: 'Admin hesabı bulunamadı.' });
         }
 
-        // Basit String doğrulaması (Gerçekte crypto/bcrypt kullanılmalıdır)
-        if (adminUser.password !== password) {
+        // Emirhan Fidan: Bcrypt güvenlik entegrasyonu sağlandı
+        const isMatch = await bcrypt.compare(password, adminUser.password);
+        if (!isMatch) {
             return res.status(401).json({ error: 'Hatalı şifre girdiniz.' });
         }
 
@@ -83,12 +85,15 @@ const adminChangePassword = async (req, res) => {
             return res.status(404).json({ error: 'Admin hesabı bulunamadı.' });
         }
 
-        if (adminUser.password !== oldPassword) {
+        const isMatch = await bcrypt.compare(oldPassword, adminUser.password);
+        if (!isMatch) {
             return res.status(401).json({ error: 'Mevcut şifreniz yanlış.' });
         }
 
-        // Yeni şifreyi kaydet
-        adminUser.password = newPassword;
+        // Emirhan Fidan: Yeni şifreyi kriptolayarak kaydet
+        const salt = await bcrypt.genSalt(10);
+        adminUser.password = await bcrypt.hash(newPassword, salt);
+        
         await adminUser.save();
 
         res.status(200).json({ message: 'Admin şifresi başarıyla güncellendi.' });
@@ -114,10 +119,25 @@ const createTicket = async (req, res) => {
     }
 };
 
+// 14 - Onay Bekleyen Rezervasyonlar (Komuta Merkezi)
+const getPendingBookings = async (req, res) => {
+    try {
+        const bookings = await Booking.find({ status: 'Onay Bekliyor' })
+            .populate('user', 'firstName lastName phone email')
+            .populate('field', 'name pricePerHour address')
+            .sort({ date: 1, timeSlot: 1 });
+            
+        res.status(200).json(bookings);
+    } catch (error) {
+        res.status(500).json({ error: 'Bekleyen rezervasyonlar getirilemedi.', details: error.message });
+    }
+};
+
 module.exports = {
     checkAvailability,
     getReports,
     adminLogin,
     adminChangePassword,
-    createTicket
+    createTicket,
+    getPendingBookings
 };
