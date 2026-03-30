@@ -8,9 +8,7 @@
     {
       "src": "saha-app-web/package.json",
       "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+      "config": { "distDir": "dist" }
     }
   ],
   "routes": [
@@ -23,7 +21,12 @@
     },
     {
       "src": "/(.*)",
-      "dest": "saha-app-web/dist/index.html"
+      "dest": "saha-app-web/$1"
+    },
+    {
+      "src": "/(.*)",
+      "status": 200,
+      "dest": "saha-app-web/index.html"
     }
   ]
 }
