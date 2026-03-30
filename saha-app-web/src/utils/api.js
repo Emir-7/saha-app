@@ -1,10 +1,17 @@
-// Lokal: VITE_API_URL=http://localhost:9000/api (.env.local)
-// Vercel: Aynı domain üzerinden /api kullanılır
-export const BASE_URL = import.meta.env.VITE_API_URL || '/api';
-// İsteğe bağlı merkezi bir fetch veya axios yapısı kurabiliriz
+// API URL'ini ortama (canlı/lokal) göre otomatik ayarla
+// Eğer tarayıcıda 'localhost' üzerinden çalışıyorsak localhost:9000'e gitsin (Lokal)
+// Eğer canlıda (Vercel) ise, mevcut domain üzerinden /api yoluna gitsin (Canlı)
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+export const BASE_URL = isLocalhost 
+    ? 'http://localhost:9000/api' // Lokal geliştirme
+    : '/api';                     // Canlı (Vercel)
+
 export const fetchApi = async (endpoint, options = {}) => {
     try {
         const url = `${BASE_URL}${endpoint}`;
+        console.log(`📡 API İsteği: ${url}`); // Debug için terminalde/konsolda görünecek
+
         const response = await fetch(url, {
             ...options,
             headers: {
@@ -21,7 +28,7 @@ export const fetchApi = async (endpoint, options = {}) => {
 
         return data;
     } catch (error) {
-        console.error('API Error:', error);
+        console.error('❌ API Hatası:', error);
         throw error;
     }
 };
