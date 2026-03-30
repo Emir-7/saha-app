@@ -19,8 +19,11 @@
       "dest": "rest-api/server.js"
     },
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
-      "dest": "saha-app-web/$1"
+      "dest": "saha-app-web/dist/index.html"
     }
   ]
 }

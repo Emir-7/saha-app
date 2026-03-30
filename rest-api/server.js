@@ -16,8 +16,13 @@ app.use(cors());
 // Yönlendirme (Router) kullanımı
 app.use('/api', routesApi);
 
-const PORT = process.env.PORT || 9000;
+// Lokal geliştirme için dinleme (Vercel'de çalışmaz, module.exports kullanılır)
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 9000;
+  app.listen(PORT, () => {
+    console.log(`Saha-App API ${PORT} portunda başarıyla çalışıyor.`);
+  });
+}
 
-app.listen(PORT, () => {
-  console.log(`Saha-App API ${PORT} portunda başarıyla çalışıyor.`);
-});
+// Vercel serverless için export
+module.exports = app;
