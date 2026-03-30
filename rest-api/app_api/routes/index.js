@@ -15,6 +15,19 @@ router.put('/fields/:fieldId', ctrlSaha.updateField);     // 12. Güncelleme
 router.delete('/fields/:fieldId', ctrlSaha.deleteField);  // 13. Silme
 
 const ctrlBooking = require('../controllers/bookingController');
+const ctrlAuth = require('../controllers/authController');
+
+// --- HİLMİ SİNAN KAPLAN (1-8) ---
+// Not: Aşağıdaki 8 rota Hilmi Sinan Kaplan sorumluluğundadır.
+router.post('/auth/register', ctrlAuth.register);                        // 1. Üye Olma
+router.post('/auth/login', ctrlAuth.login);                              // 2. Giriş Yapma
+router.get('/users/:userId', ctrlAuth.getProfile);                       // 3. Profil Görüntüleme
+router.put('/users/:userId', ctrlAuth.updateProfile);                    // 4. Profil Güncelleme
+router.patch('/users/:userId/password', ctrlAuth.changePassword);        // 5. Şifre Değiştirme
+router.post('/bookings', ctrlBooking.createBooking);                     // 6. Rezervasyon Oluşturma
+router.delete('/bookings/:bookingId', ctrlBooking.cancelBooking);        // 7. Rezervasyon İptal
+router.get('/users/:userId/bookings', ctrlBooking.listUserBookings);     // 8. Kişisel Maç Geçmişi
+
 
 // --- EMİRHAN FİDAN (9-17) ---
 router.get('/fields', ctrlSaha.listFields);                               // 9. Sahaları Listele
