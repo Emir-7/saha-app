@@ -20,7 +20,16 @@ export const fetchApi = async (endpoint, options = {}) => {
             },
         });
 
-        const data = await response.json();
+        const contentType = response.headers.get('content-type');
+        let data;
+        
+        if (contentType && contentType.includes('application/json')) {
+            data = await response.json();
+        } else {
+            const textData = await response.text();
+            console.error('❌ Beklenmedik Yanıt (JSON Değil):', textData);
+            throw new Error(`Sunucudan geçersiz yanıt alındı (HTML dönmüş olabilir). Detaylar konsolda.`);
+        }
         
         if (!response.ok) {
             throw new Error(data.error || 'API İsteği başarısız');
