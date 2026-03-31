@@ -1,32 +1,19 @@
 {
   "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/rest-api/server.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/rest-api/server.js"
+    }
+  ],
   "builds": [
     {
       "src": "rest-api/server.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "saha-app-web/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "rest-api/server.js"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "saha-app-web/$1"
-    },
-    {
-      "src": "/(.*)",
-      "status": 200,
-      "dest": "saha-app-web/index.html"
     }
   ]
 }
