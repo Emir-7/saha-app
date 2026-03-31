@@ -4,8 +4,8 @@
 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 export const BASE_URL = isLocalhost 
-    ? 'http://localhost:9000/api' // Lokal geliştirme
-    : '/api';                     // Canlı (Vercel)
+    ? 'http://localhost:9000/api'                           // Lokal geliştirme
+    : (process.env.REACT_APP_API_URL || 'https://saha-app.onrender.com/api'); // Canlı (Render)
 
 export const fetchApi = async (endpoint, options = {}) => {
     try {

@@ -11,7 +11,7 @@ const routesApi = require('./app_api/routes/index');
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: 'https://saha-app-emirhan.vercel.app' }));
 
 // Yönlendirme (Router) kullanımı
 app.use('/api', routesApi);
