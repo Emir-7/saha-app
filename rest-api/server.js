@@ -11,7 +11,17 @@ const routesApi = require('./app_api/routes/index');
 const app = express();
 
 app.use(express.json());
-app.use(cors({ origin: 'https://saha-app.onrender.com' }));
+const allowedOrigins = ['https://saha-app.onrender.com', 'http://localhost:3000', 'http://localhost:5173'];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS mismatch'));
+    }
+  },
+  credentials: true
+}));
 
 // Yönlendirme (Router) kullanımı
 app.use('/api', routesApi);
