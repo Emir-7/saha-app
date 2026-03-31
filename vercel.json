@@ -1,19 +1,19 @@
 {
   "version": 2,
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/rest-api/server.js"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/rest-api/server.js"
-    }
-  ],
   "builds": [
     {
       "src": "rest-api/server.js",
       "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "rest-api/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "rest-api/server.js"
     }
   ]
 }
