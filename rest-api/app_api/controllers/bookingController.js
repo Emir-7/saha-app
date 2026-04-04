@@ -84,24 +84,46 @@ const cancelBooking = async (req, res) => {
 const confirmBooking = async (req, res) => {
     try {
         const { bookingId } = req.params;
-        const { status } = req.body; // 'Onaylandı' veya 'İptal Edildi'
+        let { status, isConfirmed } = req.body;
+
+        // Frontend'den isConfirmed boolean/string gelirse onu status formatına çevir
+        if (isConfirmed !== undefined) {
+            // "true" veya true ise Onaylandı, aksi halde (false/"false") İptal Edildi
+            status = (isConfirmed === true || isConfirmed === 'true') ? 'Onaylandı' : 'İptal Edildi';
+        }
+
+        // Büyük/küçük harf toleransı
+        if (typeof status === 'string') {
+            const lowerStatus = status.toLowerCase().trim();
+            if (lowerStatus === 'onaylandı' || lowerStatus === 'onaylandi') status = 'Onaylandı';
+            else if (lowerStatus === 'iptal edİldİ' || lowerStatus === 'iptal edildi') status = 'İptal Edildi';
+            else if (lowerStatus === 'onay bekliyor') status = 'Onay Bekliyor';
+        }
 
         const validStatuses = ['Onay Bekliyor', 'Onaylandı', 'İptal Edildi'];
         if (!validStatuses.includes(status)) {
-            return res.status(400).json({ error: 'Geçersiz rezervasyon durumu.' });
+            return res.status(400).json({ error: 'Geçersiz rezervasyon durumu (status).' });
         }
 
-        const updatedBooking = await Booking.findByIdAndUpdate(
-            bookingId,
-            { status: status },
-            { new: true, runValidators: true }
-        );
-
-        if (!updatedBooking) {
+        // 1. Önce rezervasyonu bul (durumunu kontrol etmek için)
+        const existingBooking = await Booking.findById(bookingId);
+        
+        if (!existingBooking) {
             return res.status(404).json({ error: 'Güncellenecek rezervasyon bulunamadı.' });
         }
 
-        res.status(200).json({ message: 'Rezervasyon durumu güncellendi.', booking: updatedBooking });
+        // 2. Eğer zaten onaylanmış veya iptal edilmişse müdahale etmeye izin verme
+        if (existingBooking.status !== 'Onay Bekliyor') {
+            return res.status(400).json({ 
+                error: `İşlem başarısız. Bu rezervasyon zaten '${existingBooking.status}' durumunda.` 
+            });
+        }
+
+        // 3. Durumu güncelle ve kaydet
+        existingBooking.status = status;
+        const updatedBooking = await existingBooking.save();
+
+        res.status(200).json({ message: 'Rezervasyon durumu başarıyla güncellendi.', booking: updatedBooking });
     } catch (error) {
         res.status(500).json({ error: 'Rezervasyon onaylanırken hata oluştu.', details: error.message });
     }
