@@ -11,8 +11,10 @@ info:
     email: fidanemir40@gmail.com
 
 servers:
-  - url: http://localhost:5000/api/v1
-    description: Yerel geliştirme sunucusu (Development)
+  - url: https://saha-app.onrender.com/api
+    description: Canlı Sunucu (Production - Render)
+  - url: http://localhost:9000/api
+    description: Yerel geliştirme sunucusu (Development - Local)
 
 tags:
   - name: auth

@@ -1,6 +1,0 @@
-# Use this workspace to collaborate
-workspace:
-  id: db069833-1579-4c8d-8457-8450541e8680
-localResources:
-  specs:
-    - ..\Rest-API.yaml

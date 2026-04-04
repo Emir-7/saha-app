@@ -5,22 +5,33 @@ const Field = mongoose.model('Field');
 // 6 - Yeni Rezervasyon Talebi Oluşturma
 const createBooking = async (req, res) => {
     try {
-        const { field, user, date, timeSlot } = req.body;
+        const { field, fieldId, sahaId, user, date, timeSlot } = req.body;
+        
+        // Frontend'den field, fieldId veya sahaId gelme ihtimaline karşı:
+        const targetFieldId = field || fieldId || sahaId;
+
+        if (!targetFieldId) {
+            return res.status(400).json({ error: 'Saha ID değeri eksik.' });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(targetFieldId)) {
+            return res.status(400).json({ error: 'Geçersiz saha ID formatı.' });
+        }
 
         // Kontrol: Saha var mı?
-        const existingField = await Field.findById(field);
+        const existingField = await Field.findById(targetFieldId);
         if (!existingField) {
             return res.status(404).json({ error: 'Rezervasyon yapılmak istenen saha sistemde bulunamadı.' });
         }
 
         // Kontrol: O sahanın istenen saati başka bir rezervasyonda (İptal edilmemiş haliyle) dolu mu?
-        const isOccupied = await Booking.findOne({ field, date, timeSlot, status: { $ne: 'İptal Edildi' } });
+        const isOccupied = await Booking.findOne({ field: targetFieldId, date, timeSlot, status: { $ne: 'İptal Edildi' } });
         if (isOccupied) {
             return res.status(400).json({ error: 'Bu saha seçilen saat aralığında zaten dolu/rezerve edilmiş.' });
         }
 
         const newBooking = await Booking.create({
-            field,
+            field: targetFieldId,
             user,
             date,
             timeSlot,
