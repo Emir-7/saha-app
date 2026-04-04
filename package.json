@@ -1,0 +1,21 @@
+{
+  "name": "saha-app-monorepo",
+  "version": "1.0.0",
+  "description": "Saha-App Monorepo Management",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:web\" \"npm run dev:api\"",
+    "dev:web": "cd saha-app-web && npm run dev",
+    "dev:api": "cd rest-api && npm start",
+    "install:all": "npm install && cd saha-app-web && npm install && cd ../rest-api && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.3.1",
+    "express": "^4.19.0",
+    "mongoose": "^8.3.0"
+  }
+}
