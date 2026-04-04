@@ -11,10 +11,10 @@ const routesApi = require('./app_api/routes/index');
 const app = express();
 
 app.use(express.json());
-const allowedOrigins = ['https://saha-app.onrender.com', 'http://localhost:3000', 'http://localhost:5173'];
+const allowedOrigins = ['https://saha-app.onrender.com', 'https://saha-app-3iwt.vercel.app', 'http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:5173'];
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
       callback(null, true);
     } else {
       callback(new Error('CORS mismatch'));

@@ -5,7 +5,7 @@ const isLocalhost = window.location.hostname === 'localhost' || window.location.
 
 export const BASE_URL = isLocalhost 
     ? 'http://localhost:9000/api'                           // Lokal geliştirme
-    : 'https://saha-app-3iwt.vercel.app/api';               // Canlı (Vercel Backend)
+    : 'https://saha-app.onrender.com/api';                  // Canlı (Render Backend)
 
 export const fetchApi = async (endpoint, options = {}) => {
     try {
