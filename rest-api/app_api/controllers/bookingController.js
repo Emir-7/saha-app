@@ -5,17 +5,24 @@ const Field = mongoose.model('Field');
 // 6 - Yeni Rezervasyon Talebi Oluşturma
 const createBooking = async (req, res) => {
     try {
-        const { field, fieldId, sahaId, user, date, timeSlot } = req.body;
+        const { field, fieldId, sahaId, user, userId, kullaniciId, date, timeSlot } = req.body;
         
         // Frontend'den field, fieldId veya sahaId gelme ihtimaline karşı:
         const targetFieldId = field || fieldId || sahaId;
+        const targetUserId = user || userId || kullaniciId;
 
         if (!targetFieldId) {
-            return res.status(400).json({ error: 'Saha ID değeri eksik.' });
+            return res.status(400).json({ error: 'Saha ID (fieldId) değeri eksik.' });
+        }
+        if (!targetUserId) {
+            return res.status(400).json({ error: 'Kullanıcı ID (userId veya user) değeri eksik.' });
         }
 
         if (!mongoose.Types.ObjectId.isValid(targetFieldId)) {
             return res.status(400).json({ error: 'Geçersiz saha ID formatı.' });
+        }
+        if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
+            return res.status(400).json({ error: 'Geçersiz kullanıcı ID formatı.' });
         }
 
         // Kontrol: Saha var mı?
@@ -32,7 +39,7 @@ const createBooking = async (req, res) => {
 
         const newBooking = await Booking.create({
             field: targetFieldId,
-            user,
+            user: targetUserId,
             date,
             timeSlot,
             status: 'Onay Bekliyor'
