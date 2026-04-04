@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { fetchApi } from '../utils/api';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Trash2, PlusCircle, DollarSign, List, ShieldAlert, CheckCircle, XCircle, Users, Edit2, X, Save } from 'lucide-react';
+import { Trash2, PlusCircle, DollarSign, List, ShieldAlert, CheckCircle, XCircle, Users, Edit2, X, Save, User, Lock, Mail, MessageSquare } from 'lucide-react';
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ session }) => {
     const [activeTab, setActiveTab] = useState('command-center');
     const [fields, setFields] = useState([]);
     const [report, setReport] = useState({ totalRevenue: 0, totalBookingsCount: 0 });
     const [pendingBookings, setPendingBookings] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [tickets, setTickets] = useState([]); // REQ-16
+    const [adminProfile, setAdminProfile] = useState({ firstName: '', lastName: '', email: '', password: '' });
+    const [profileLoading, setProfileLoading] = useState(false);
 
     const [newField, setNewField] = useState({ name: '', address: '', pricePerHour: '', imageUrl: '' });
 
@@ -21,14 +24,27 @@ const AdminDashboard = () => {
     const loadData = async () => {
         try {
             setLoading(true);
-            const [fieldsData, reportData, pendingData] = await Promise.all([
+            const [fieldsData, reportData, pendingData, ticketsData] = await Promise.all([
                 fetchApi('/fields'),
                 fetchApi('/admin/reports'),
-                fetchApi('/admin/pending-bookings') // REQ 14 - Komuta Merkezi Data
+                fetchApi('/admin/pending-bookings'), // REQ 14 - Komuta Merkezi Data
+                fetchApi('/support/tickets') // REQ-16
             ]);
             setFields(fieldsData);
             setReport(reportData);
             setPendingBookings(pendingData);
+            setTickets(ticketsData);
+            
+            // REQ-17 Profil bilgisi çekme
+            if (session?.userId) {
+                const profileData = await fetchApi(`/users/${session.userId}`);
+                setAdminProfile({ 
+                    firstName: profileData.firstName || '', 
+                    lastName: profileData.lastName || '', 
+                    email: profileData.email || '', 
+                    password: '' 
+                });
+            }
         } catch (error) {
             console.error("Veri çekme hatası:", error);
         } finally {
@@ -122,7 +138,27 @@ const AdminDashboard = () => {
         }
     };
 
+    // REQ-17 Profil Güncelleme
+    const handleProfileUpdate = async (e) => {
+        e.preventDefault();
+        setProfileLoading(true);
+        try {
+            await fetchApi(`/admin/profile/${session.userId}`, {
+                method: 'PUT',
+                body: JSON.stringify(adminProfile)
+            });
+            alert('Yönetici profil bilgileriniz başarıyla güncellendi!');
+            setAdminProfile(prev => ({ ...prev, password: '' }));
+            loadData();
+        } catch (error) {
+            alert('Profil güncellenirken hata oluştu: ' + error.message);
+        } finally {
+            setProfileLoading(false);
+        }
+    };
+
     if (loading) return <div style={{textAlign: 'center', marginTop: '100px', fontSize: '18px', color: '#64748b'}}>Güvenli Yönetim Paneli Yükleniyor...</div>;
+
 
     const chartData = [
         { name: 'Rezervasyon Geliri', Kazaç: report.totalRevenue },
@@ -241,6 +277,12 @@ const AdminDashboard = () => {
                 </button>
                 <button style={tabBtnStyle('finance-fields')} onClick={() => setActiveTab('finance-fields')}>
                     <DollarSign size={20} /> Finans ve Tesis Ayarları
+                </button>
+                <button style={tabBtnStyle('support-tickets')} onClick={() => setActiveTab('support-tickets')}>
+                    <MessageSquare size={20} /> Destek Talepleri
+                </button>
+                <button style={tabBtnStyle('account-settings')} onClick={() => setActiveTab('account-settings')}>
+                    <User size={20} /> Hesap Ayarları
                 </button>
             </div>
 
@@ -374,6 +416,95 @@ const AdminDashboard = () => {
                             </div>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {/* SEKME 3: DESTEK TALEPLERİ (REQ-16) */}
+            {activeTab === 'support-tickets' && (
+                <div>
+                    <div style={{ marginBottom: '25px' }}>
+                        <h2 style={{ color: '#0f172a', margin: '0 0 5px 0', fontSize: '26px' }}>Destek Talepleri</h2>
+                        <p style={{ color: '#64748b', margin: 0 }}>Kullanıcıların sistem üzerinden gönderdiği mesaj ve yardım talepleri.</p>
+                    </div>
+
+                    {tickets.length === 0 ? (
+                        <div style={{ background: 'white', padding: '60px 40px', borderRadius: '16px', textAlign: 'center', border: '1px dashed #cbd5e1' }}>
+                            <CheckCircle color="#10b981" size={48} style={{ marginBottom: '15px' }} />
+                            <h3 style={{ margin: '0 0 10px 0', color: '#1e293b' }}>Bekleyen Destek Talebi Yok</h3>
+                            <p style={{ color: '#64748b', margin: 0 }}>Görünüşe göre tüm müşterilerimiz durumdan çok memnun!</p>
+                        </div>
+                    ) : (
+                        <div style={{ display: 'grid', gap: '20px' }}>
+                            {tickets.map(ticket => (
+                                <div key={ticket._id} style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '24px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', paddingBottom: '15px', borderBottom: '1px solid #f1f5f9' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <div style={{ background: '#eff6ff', padding: '10px', borderRadius: '50%' }}>
+                                                <User color="#3b82f6" size={20} />
+                                            </div>
+                                            <div>
+                                                <h4 style={{ margin: 0, fontSize: '16px', color: '#1e293b' }}>
+                                                    {ticket.user?.firstName} {ticket.user?.lastName}
+                                                </h4>
+                                                <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#64748b' }}>
+                                                    {ticket.user?.email} • {ticket.user?.phone || 'Telefon Yok'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div style={{ textAlign: 'right', color: '#94a3b8', fontSize: '13px' }}>
+                                            {new Date(ticket.createdAt).toLocaleString('tr-TR')}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 style={{ margin: '0 0 10px 0', color: '#334155', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <Mail size={16} /> Konu: {ticket.subject}
+                                        </h4>
+                                        <p style={{ margin: 0, padding: '15px', background: '#f8fafc', borderRadius: '8px', color: '#475569', lineHeight: '1.5', fontSize: '15px' }}>
+                                            {ticket.message}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* SEKME 4: HESAP AYARLARI (REQ-17) */}
+            {activeTab === 'account-settings' && (
+                <div style={{ maxWidth: '600px' }}>
+                    <div style={{ marginBottom: '25px' }}>
+                        <h2 style={{ color: '#0f172a', margin: '0 0 5px 0', fontSize: '26px' }}>Hesap Ayarları</h2>
+                        <p style={{ color: '#64748b', margin: 0 }}>Yönetici şifrenizi veya profil bilgilerinizi güncelleyin.</p>
+                    </div>
+
+                    <form onSubmit={handleProfileUpdate} style={{ background: 'white', padding: '30px', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        <div style={{ display: 'flex', gap: '15px' }}>
+                            <div style={{ flex: 1 }}>
+                                <label style={modalLabelStyle}>Adınız</label>
+                                <input type="text" required style={modalInputStyle} value={adminProfile.firstName} onChange={e => setAdminProfile({...adminProfile, firstName: e.target.value})} />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <label style={modalLabelStyle}>Soyadınız</label>
+                                <input type="text" required style={modalInputStyle} value={adminProfile.lastName} onChange={e => setAdminProfile({...adminProfile, lastName: e.target.value})} />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style={modalLabelStyle}>E-Posta Adresi (Giriş ID)</label>
+                            <input type="email" required style={modalInputStyle} value={adminProfile.email} onChange={e => setAdminProfile({...adminProfile, email: e.target.value})} />
+                        </div>
+
+                        <div style={{ padding: '20px', background: '#fffbeb', borderRadius: '8px', border: '1px solid #fde68a' }}>
+                            <label style={{...modalLabelStyle, color: '#b45309', display: 'flex', alignItems: 'center', gap: '6px'}}><Lock size={16}/> Yeni Şifre Belirle (İsteğe Bağlı)</label>
+                            <input type="password" placeholder="Sadece değiştirmek istiyorsanız doldurun" style={{...modalInputStyle, background: 'white', borderColor: '#fcd34d'}} value={adminProfile.password} onChange={e => setAdminProfile({...adminProfile, password: e.target.value})} />
+                            <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: '#d97706' }}>Eğer şifrenizi değiştirmek istemiyorsanız bu alanı boş bırakın.</p>
+                        </div>
+
+                        <button type="submit" disabled={profileLoading} style={{ padding: '14px', backgroundColor: profileLoading ? '#94a3b8' : '#1e293b', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: profileLoading ? 'not-allowed' : 'pointer', marginTop: '10px', transition: 'background 0.2s' }}>
+                            {profileLoading ? 'Güncelleniyor...' : 'Profil Ayarlarımı Kaydet'}
+                        </button>
+                    </form>
                 </div>
             )}
         </div>

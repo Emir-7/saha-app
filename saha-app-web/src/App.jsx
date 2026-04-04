@@ -89,7 +89,7 @@ function App() {
 
             {/* Dinamik Sayfa Yönlendirmesi (Routing) */}
             <div style={{ padding: '20px' }}>
-                {view === 'admin' && session?.role === 'admin' && <AdminDashboard />}
+                {view === 'admin' && session?.role === 'admin' && <AdminDashboard session={session} />}
                 {view === 'admin' && session?.role !== 'admin' && <div style={{textAlign:'center', marginTop: '50px', color: 'red'}}>Bu sayfaya erişim yetkiniz yok. (Admin girişi gereklidir)</div>}
                 {view === 'login' && <Login setView={setView} setSession={setSession} />}
                 {view === 'admin-login' && <AdminLogin setView={setView} setSession={setSession} />}

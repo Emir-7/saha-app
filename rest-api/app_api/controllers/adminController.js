@@ -133,11 +133,54 @@ const getPendingBookings = async (req, res) => {
     }
 };
 
+// REQ-16: Destek taleplerini kronolojik olarak listele
+const getSupportTickets = async (req, res) => {
+    try {
+        const tickets = await Ticket.find()
+            .populate('user', 'firstName lastName email phone')
+            .sort({ createdAt: -1 });
+        res.status(200).json(tickets);
+    } catch (error) {
+        res.status(500).json({ error: 'Destek talepleri getirilirken hata oluştu.', details: error.message });
+    }
+};
+
+// REQ-17: Admin Profil Yönetimi (Dinamik)
+const updateAdminProfile = async (req, res) => {
+    try {
+        const { adminId } = req.params;
+        const { firstName, lastName, email, password } = req.body;
+
+        const updateData = { firstName, lastName, email };
+
+        if (password && password.trim() !== '') {
+            const salt = await bcrypt.genSalt(10);
+            updateData.password = await bcrypt.hash(password, salt);
+        }
+
+        const updatedAdmin = await User.findOneAndUpdate(
+            { _id: adminId, role: 'admin' },
+            updateData,
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!updatedAdmin) {
+            return res.status(404).json({ error: 'Admin hesabı bulunamadı veya güncelleme yetkiniz yok.' });
+        }
+
+        res.status(200).json({ message: 'Profiliniz başarıyla güncellendi.', admin: updatedAdmin });
+    } catch (error) {
+        res.status(500).json({ error: 'Profil güncellenirken hata oluştu.', details: error.message });
+    }
+};
+
 module.exports = {
     checkAvailability,
     getReports,
     adminLogin,
     adminChangePassword,
     createTicket,
-    getPendingBookings
+    getPendingBookings,
+    getSupportTickets,
+    updateAdminProfile
 };
