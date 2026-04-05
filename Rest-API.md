@@ -1,6 +1,6 @@
 # REST API Görev Dağılımı
 
-**REST API Adresi:** [api.saha-app.com](https://api.sahaapp.com)
+**REST API Adresi:** [api.saha-app.com](https://saha-app.onrender.com)
 
 Bu dokümanda, proje ekibindeki her üyenin geliştirmekten sorumlu olduğu REST API metotları listelenmektedir.
 

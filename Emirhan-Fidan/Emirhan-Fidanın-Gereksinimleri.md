@@ -1,21 +1,55 @@
-# Emirhan Fidanın Gereksinimleri (9-17)
+🛡️ Saha Yönetimi ve Admin İşlemleri (Emirhan Fidan)
 
-Bu doküman, Saha-App projesinin 3. ve 4. aşamaları kapsamında Emirhan Fidan tarafından geliştirilen REST API noktalarını ve Frontend gereksinimlerini listelemektedir. Tüm API istekleri `https://saha-app.onrender.com/api` adresine yapılmaktadır.
+9. Sahaları Listeleme
 
-| No | İşlem Adı | HTTP Metodu | Route (Endpoint) | Açıklama |
-| --- | --- | --- | --- | --- |
-| 9 | Sahaları Listeleme | `GET` | `/fields` | Sistemdeki tüm sahaları listeler. |
-| 10 | Detay Görüntüleme | `GET` | `/fields/:fieldId` | ID'si verilen özel bir sahanın bilgilerini getirir. |
-| 11 | Yeni Saha Ekleme | `POST` | `/fields` | Yeni bir saha kaydı oluşturur (Sadece admin paneli). |
-| 12 | Saha Güncelleme | `PUT` | `/fields/:fieldId` | Mevcut bir sahanın fiyat, adres vb. bilgilerini günceller. |
-| 13 | Müsaitlik Sorgulama | `GET` | `/fields/:fieldId/availability`| İlgili sahanın rezervasyon müsaitlik durumunu döndürür. |
-| 14 | Rezervasyon Onayı | `PATCH` | `/bookings/:bookingId/confirm`| Adminin gelen bir rezervasyon talebini onaylamasını veya reddetmesini sağlar. |
-| 15 | Finansal Rapor | `GET` | `/admin/reports` | Tüm onaylı rezervasyonlar üzerinden toplam hesaplanan günlük/aylık gelir grafikleri için veri sağlar. |
-| 16 | Destek Talebi | `POST` | `/support/tickets` | Kullanıcıların sorun bildirmesi veya yardım istemesi için `Ticket` oluşturur. |
-| 17 | Admin Girişi | `POST` | `/admin/login` | Yönetici paneline erişim için yetkilendirme sağlar. |
+    API Metodu: GET /fields
 
-### Ek Olarak Geliştirilenler
+    Açıklama: Sistemde kayıtlı olan tüm aktif halı sahaların; isim, konum, zemin türü ve tesis özelliklerini içeren genel bir listenin kullanıcıya sunulmasını sağlar.
 
-*   **Saha Silme**: `DELETE /fields/:fieldId` -> Yanlış girilen sahaları panelden kalıcı olarak kaldırmak için.
-*   **Ticket Modeli**: Mongoose üzerinde Destek Talebi işlemleri için oluşturulmuştur.
-*   **Arayüz (Dashboard)**: Gelir, kayıtlı saha sayısı, API destekli saha ekleme/silme özelliklerine sahip `AdminDashboard.jsx` geliştirilmiştir.
+10. Detaylı Saha Verisi Görüntüleme
+
+    API Metodu: GET /fields/{fieldId}
+
+    Açıklama: Belirli bir sahanın fotoğrafları, saatlik ücreti, sunduğu imkanlar (duş, otopark, kantin vb.) gibi tüm teknik ve idari detaylarının tek bir sayfada incelenmesine olanak tanır.
+
+11. Yeni Saha Tanımlama ve Ekleme
+
+    API Metodu: POST /fields
+
+    Açıklama: İşletmecinin sisteme yeni bir halı saha birimi, çalışma saatleri ve teknik özelliklerini tanımlayarak platformun hizmet kapasitesini genişletmesini sağlar.
+
+12. Saha Bilgilerini ve Fiyatları Güncelleme
+
+    API Metodu: PUT /fields/{fieldId}
+
+    Açıklama: Mevcut bir sahanın saatlik ücret, açıklama metni veya tesis imkanları gibi değişken verilerinin yönetici tarafından dinamik olarak güncellenmesini sağlar.
+
+13. Müsaitlik Durumu Sorgulama
+
+    API Metodu: GET /fields/{fieldId}/availability
+
+    Açıklama: Belirli bir tarih için sahanın hangi saat dilimlerinin boş veya dolu olduğunu sorgulayarak, kullanıcının doğru zamanda randevu almasına rehberlik eder.
+
+14. Randevu Taleplerini Yönetme ve Onaylama
+
+    API Metodu: PATCH /bookings/{bookingId}/confirm
+
+    Açıklama: İşletmecinin, kullanıcılardan gelen bekleyen (Pending) rezervasyon isteklerini inceleyerek onaylama veya reddetme işlemlerini gerçekleştirdiği karar mekanizmasıdır.
+
+15. İşletme Finansal ve Gelir Raporu
+
+    API Metodu: GET /admin/reports
+
+    Açıklama: İşletmecinin günlük ve aylık periyotlarda toplam kazancını, rezervasyon sayılarını ve finansal performansını kontrol etmesini sağlayan veri analizi servisidir.
+
+16. Destek Talebi Oluşturma
+
+    API Metodu: POST /support/tickets
+
+    Açıklama: Kullanıcıların sistemle ilgili yaşadığı teknik sorunları veya sahalar hakkındaki şikayetlerini yönetime iletebileceği profesyonel bir iletişim (ticket) kanalı oluşturur.
+
+17. Yönetici Paneli Giriş ve Yetkilendirme
+
+    API Metodu: POST /admin/login
+
+    Açıklama: İşletme sahibinin veya sistem yöneticisinin, kullanıcı yetkilerinden farklı olarak yönetimsel fonksiyonlara (Saha ekleme, onaylama vb.) erişebilmesi için gerekli güvenli girişi sağlar.
