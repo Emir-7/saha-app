@@ -1,8 +1,7 @@
 
 # Emirhan Fidan'ın REST API Metotları
 
-**API Test Videosu:** Link buraya eklenecek
-
+**API Test Videosu:** [https://www.youtube.com/watch?v=qnAWRXh4Dp0] 
 ## 9. Saha ve Tesis Listeleme
 - **Endpoint:** `GET /fields`
 - **Response:** `200 OK` - Tüm sahalar başarıyla listelendi
