@@ -127,11 +127,16 @@ const Login = ({ setView, setSession }) => {
                     </button>
                 </form>
 
+<<<<<<< HEAD
                 <div style={{ marginTop: '25px', fontSize: '14px', color: '#64748b', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <div>Hesabınız yok mu? <span onClick={() => setView('register')} style={{ color: '#2563eb', fontWeight: 'bold', cursor: 'pointer', marginLeft: '5px' }}>Kayıt Olun</span></div>
                     <div onClick={() => setView('admin-login')} style={{ color: '#94a3b8', fontSize: '12px', cursor: 'pointer', marginTop: '10px', textDecoration: 'underline' }}>
                         Tesis Yöneticisi Girişi
                     </div>
+=======
+                <div style={{ marginTop: '25px', fontSize: '14px', color: '#64748b' }}>
+                    Hesabınız yok mu? <span onClick={() => setView('register')} style={{ color: '#2563eb', fontWeight: 'bold', cursor: 'pointer', marginLeft: '5px' }}>Kayıt Olun</span>
+>>>>>>> origin/HSKaplan
                 </div>
             </div>
         </div>

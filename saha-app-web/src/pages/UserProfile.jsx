@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { User, Key, CalendarClock, History, Settings, X, CheckCircle, CreditCard, ChevronDown, LifeBuoy, Send } from 'lucide-react';
+=======
+import { User, Key, CalendarClock, History, Settings, X, CheckCircle, CreditCard, ChevronDown } from 'lucide-react';
+>>>>>>> origin/HSKaplan
 import { fetchApi } from '../utils/api';
 
 const UserProfile = ({ session }) => {
@@ -17,10 +21,13 @@ const UserProfile = ({ session }) => {
     const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '' });
     const [bookingForm, setBookingForm] = useState({ field: '', date: '', timeSlot: '' });
 
+<<<<<<< HEAD
     // REQ-16: Destek Talebi Form State
     const [ticketForm, setTicketForm] = useState({ subject: '', message: '' });
     const [ticketLoading, setTicketLoading] = useState(false);
 
+=======
+>>>>>>> origin/HSKaplan
     // Verileri Yükle
     useEffect(() => {
         const loadData = async () => {
@@ -90,8 +97,14 @@ const UserProfile = ({ session }) => {
                 body: JSON.stringify({ ...bookingForm, user: session.userId })
             });
             showAlert(newBooking.message);
+<<<<<<< HEAD
             setBookingForm({ field: '', date: '', timeSlot: '' });
             
+=======
+            setBookingForm({ field: '', date: '', timeSlot: '' }); // Reset
+            
+            // Listeyi yenile
+>>>>>>> origin/HSKaplan
             const freshBookings = await fetchApi(`/users/${session.userId}/bookings`);
             setBookings(freshBookings);
             setActiveTab('bookings');
@@ -114,6 +127,7 @@ const UserProfile = ({ session }) => {
         }
     };
 
+<<<<<<< HEAD
     // REQ-16: Destek Talebi Gönderme (POST /api/support/tickets)
     const handleTicketSubmit = async (e) => {
         e.preventDefault();
@@ -136,6 +150,8 @@ const UserProfile = ({ session }) => {
         }
     };
 
+=======
+>>>>>>> origin/HSKaplan
     if (loading) return <div style={{ textAlign: 'center', padding: '100px', fontSize: '18px', color: '#64748b' }}>Bilgileriniz yükleniyor...</div>;
 
     const navBtnStyle = (tab) => ({
@@ -177,8 +193,11 @@ const UserProfile = ({ session }) => {
                     <button style={navBtnStyle('new-booking')} onClick={() => setActiveTab('new-booking')}><CalendarClock size={18}/> Saha Kirala</button>
                     <button style={navBtnStyle('profile')} onClick={() => setActiveTab('profile')}><Settings size={18}/> Profil Ayarları</button>
                     <button style={navBtnStyle('security')} onClick={() => setActiveTab('security')}><Key size={18}/> Şifre Değiştir</button>
+<<<<<<< HEAD
                     {/* REQ-16: Destek Talebi sekmesi */}
                     <button style={navBtnStyle('support')} onClick={() => setActiveTab('support')}><LifeBuoy size={18}/> Destek Talebi</button>
+=======
+>>>>>>> origin/HSKaplan
                 </div>
 
                 <div style={{ padding: '30px' }}>
@@ -300,6 +319,7 @@ const UserProfile = ({ session }) => {
                         </div>
                     )}
 
+<<<<<<< HEAD
                     {/* TAB: REQ-16 Destek Talebi */}
                     {activeTab === 'support' && (
                         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
@@ -367,6 +387,8 @@ const UserProfile = ({ session }) => {
                         </div>
                     )}
 
+=======
+>>>>>>> origin/HSKaplan
                 </div>
             </div>
         </div>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // API URL'ini ortama (canlı/lokal) göre otomatik ayarla
 // Eğer tarayıcıda 'localhost' üzerinden çalışıyorsak localhost:9000'e gitsin (Lokal)
 // Eğer canlıda (Vercel) ise, mevcut domain üzerinden /api yoluna gitsin (Canlı)
@@ -7,6 +8,11 @@ export const BASE_URL = isLocalhost
     ? 'http://localhost:9000/api'                           // Lokal geliştirme
     : 'https://saha-app.onrender.com/api';                  // Canlı (Render Backend)
 
+=======
+// Geliştirici (Lokal) API URL'si
+export const BASE_URL = 'http://localhost:9000/api';
+// İsteğe bağlı merkezi bir fetch veya axios yapısı kurabiliriz
+>>>>>>> origin/HSKaplan
 export const fetchApi = async (endpoint, options = {}) => {
     try {
         const url = `${BASE_URL}${endpoint}`;

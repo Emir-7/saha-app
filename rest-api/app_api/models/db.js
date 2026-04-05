@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
+<<<<<<< HEAD
 // Bağlantı adresi (Vercel/Atlas için MONGO_URI, Lokal için localhost)
+=======
+// docker-compose ortam değişkeni veya varsayılan bağlantı adresi (127.0.0.1)
+>>>>>>> origin/HSKaplan
 const dbURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/SahaAppDB';
 
 mongoose.connect(dbURI)

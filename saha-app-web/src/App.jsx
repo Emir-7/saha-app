@@ -3,12 +3,16 @@ import AdminDashboard from './pages/AdminDashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import UserProfile from './pages/UserProfile';
+<<<<<<< HEAD
 import AdminLogin from './pages/AdminLogin';
 import { fetchApi } from './utils/api';
+=======
+>>>>>>> origin/HSKaplan
 
 function App() {
     const [view, setView] = useState('home');
     const [session, setSession] = useState(null); // { userId: string, role: string }
+<<<<<<< HEAD
     const [pendingCount, setPendingCount] = useState(0); // Admin Onay Bildirimi (REQ-14)
 
     useEffect(() => {
@@ -30,11 +34,14 @@ function App() {
             setPendingCount(0);
         }
     }, [session, view]);
+=======
+>>>>>>> origin/HSKaplan
 
     const handleLogout = () => {
         setSession(null);
         setView('home');
     };
+<<<<<<< HEAD
 
     const navBtnStyle = (isActive, activeColor = '#3b82f6') => ({
         padding: '8px 16px',
@@ -46,6 +53,8 @@ function App() {
         fontWeight: 'bold',
         transition: 'all 0.2s'
     });
+=======
+>>>>>>> origin/HSKaplan
 
     return (
         <div style={{ minHeight: '100vh', background: '#f1f5f9', fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif' }}>
@@ -56,13 +65,18 @@ function App() {
                 position: 'sticky', top: 0, zIndex: 100
             }}>
                 <h2 onClick={() => setView('home')} style={{ color: 'white', margin: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>
+<<<<<<< HEAD
                     ⚽ Saha-App
+=======
+                    ⚽ Saha-App 
+>>>>>>> origin/HSKaplan
                 </h2>
                 <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
                     <button onClick={() => setView('home')} style={navBtnStyle(view === 'home')}>Ana Sayfa</button>
                     
                     {/* Admin Butonu */}
                     {session?.role === 'admin' && (
+<<<<<<< HEAD
                         <button onClick={() => setView('admin')} style={{...navBtnStyle(view === 'admin', '#f59e0b'), display: 'flex', alignItems: 'center'}}>
                             Yönetici Paneli
                             {pendingCount > 0 && (
@@ -71,6 +85,9 @@ function App() {
                                 </span>
                             )}
                         </button>
+=======
+                        <button onClick={() => setView('admin')} style={navBtnStyle(view === 'admin', '#f59e0b')}>Yönetici Paneli</button>
+>>>>>>> origin/HSKaplan
                     )}
 
                     {!session ? (
@@ -89,10 +106,16 @@ function App() {
 
             {/* Dinamik Sayfa Yönlendirmesi (Routing) */}
             <div style={{ padding: '20px' }}>
+<<<<<<< HEAD
                 {view === 'admin' && session?.role === 'admin' && <AdminDashboard session={session} />}
                 {view === 'admin' && session?.role !== 'admin' && <div style={{textAlign:'center', marginTop: '50px', color: 'red'}}>Bu sayfaya erişim yetkiniz yok. (Admin girişi gereklidir)</div>}
                 {view === 'login' && <Login setView={setView} setSession={setSession} />}
                 {view === 'admin-login' && <AdminLogin setView={setView} setSession={setSession} />}
+=======
+                {view === 'admin' && session?.role === 'admin' && <AdminDashboard />}
+                {view === 'admin' && session?.role !== 'admin' && <div style={{textAlign:'center', marginTop: '50px', color: 'red'}}>Bu sayfaya erişim yetkiniz yok. (Admin girişi gereklidir)</div>}
+                {view === 'login' && <Login setView={setView} setSession={setSession} />}
+>>>>>>> origin/HSKaplan
                 {view === 'register' && <Register setView={setView} />}
                 {view === 'profile' && session && <UserProfile session={session} />}
                 
@@ -102,11 +125,38 @@ function App() {
                         <p style={{ fontSize: '20px', color: '#64748b', maxWidth: '700px', margin: '0 auto 40px auto', lineHeight: '1.6' }}>
                             Türkiye'nin en gelişmiş halı saha rezervasyon sistemine hoş geldiniz. Tesisimizi inceleyebilir, müsait saatleri anında görüntüleyip güvenle dakikalar içinde maçınızı ayarlayabilirsiniz.
                         </p>
+                        
+                        {!session ? (
+                            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+                                <button onClick={() => setView('register')} style={{ background: '#10b981', color: 'white', border: 'none', padding: '16px 32px', borderRadius: '12px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 8px 15px rgba(16, 185, 129, 0.3)', transition: 'transform 0.2s' }} onMouseEnter={(e)=>e.target.style.transform='translateY(-3px)'} onMouseLeave={(e)=>e.target.style.transform='translateY(0)'}>
+                                    Hemen Üye Ol
+                                </button>
+                                <button onClick={() => setView('login')} style={{ background: 'white', color: '#1e293b', border: '2px solid #e2e8f0', padding: '16px 32px', borderRadius: '12px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={(e)=>e.target.style.borderColor='#cbd5e1'} onMouseLeave={(e)=>e.target.style.borderColor='#e2e8f0'}>
+                                    Zaten Hesabım Var
+                                </button>
+                            </div>
+                        ) : (
+                            <button onClick={() => setView('profile')} style={{ background: '#3b82f6', color: 'white', border: 'none', padding: '16px 32px', borderRadius: '12px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 8px 15px rgba(59, 130, 246, 0.3)' }}>
+                                Panelime Git ve Saha Kirala
+                            </button>
+                        )}
                     </div>
                 )}
             </div>
         </div>
     );
 }
+
+const navBtnStyle = (isActive, activeBg = '#3b82f6') => ({
+    padding: '10px 18px',
+    borderRadius: '8px',
+    border: 'none',
+    cursor: 'pointer',
+    backgroundColor: isActive ? activeBg : 'transparent',
+    color: isActive ? 'white' : '#cbd5e1',
+    fontWeight: 'bold',
+    fontSize: '15px',
+    transition: 'all 0.2s',
+});
 
 export default App;
