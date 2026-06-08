@@ -43,7 +43,7 @@ redisClient.connect()
 // İsteklerin route dosyalarında kullanılabilmesi için redisClient'ı express'e bağlıyoruz
 app.set('redisClient', redisClient);
 
-// 🟨 2. RABBITMQ BAĞLANTI VE KUYRUK OLUŞTURMA AYARI
+// 🟨 2. RABBITMQ BAĞLANTI VE KUYRUK OLUŞTURMA AYARI (Lokal Koruma Güvenlik Protokolü)
 async function initRabbitMQ() {
   try {
     const connection = await amqp.connect(process.env.RABBITMQ_URL || 'amqp://localhost');
@@ -57,11 +57,17 @@ async function initRabbitMQ() {
     // Controller dosyalarında erişebilmek için express nesnesine gömüyoruz
     app.set('mqChannel', channel);
   } catch (err) {
-    console.log('⚠️ RabbitMQ Bağlantı Hatası (Kuyruk mekanizması pasif, sistem çalışmaya devam ediyor):', err.message);
+    console.log('⚠️ RabbitMQ Lokal Modda: Gerçek kuyruk sunucusu bulunamadı. Sistem simüle moduna alınıyor.');
+    
+    // 🛡️ LOKAL KORUMA: Bilgisayarda RabbitMQ yoksa uygulamanın kilitlenmesini önlemek için sahte (mock) bir obje bağlıyoruz
+    app.set('mqChannel', {
+      sendToQueue: (q, msg) => console.log(`[Simüle Kuyruk] ${q} adresine mesaj gönderildi:`, msg.toString()),
+      assertQueue: () => Promise.resolve()
+    });
   }
 }
 initRabbitMQ();
-s
+
 // ==========================================
 
 // Yönlendirme (Router) kullanımı
