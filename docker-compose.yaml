@@ -9,6 +9,19 @@ services:
     volumes:
       - mongodb_data:/data/db
 
+  redis_kapsayici:
+    image: redis:alpine
+    container_name: redis_kapsayici
+    ports:
+      - "6379:6379"
+
+  rabbitmq_kapsayici:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq_kapsayici
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
   sahaapp_api:
     build:
       context: ./rest-api
@@ -18,8 +31,12 @@ services:
     environment:
       - MONGO_URI=mongodb://mongodb_kapsayici:27017/SahaAppDB
       - PORT=9000
+      - REDIS_URL=redis://redis_kapsayici:6379
+      - RABBITMQ_URL=amqp://rabbitmq_kapsayici
     depends_on:
       - mongodb_kapsayici
+      - redis_kapsayici
+      - rabbitmq_kapsayici
 
   sahaapp_web:
     build:

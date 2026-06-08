@@ -52,30 +52,32 @@ const createBooking = async (req, res) => {
             status:   'Onay Bekliyor'
         });
 
-        // 2. GÜVENLİ SİMÜLASYON - RabbitMQ (mqChannel)
+        // Sunum için: RabbitMQ event producer
         try {
-            if (typeof mqChannel !== 'undefined' && mqChannel) {
+            const mqChannel = req.app.get('mqChannel');
+            if (mqChannel) {
                 mqChannel.sendToQueue(
-                    'booking_created',
-                    Buffer.from(JSON.stringify({ bookingId: newBooking._id, field: actualField, user: actualUser }))
+                    'booking_queue',
+                    Buffer.from(JSON.stringify({ bookingId: newBooking._id, field: actualField, user: actualUser, date, timeSlot }))
                 );
+                console.log("🚀 [RabbitMQ] Rezervasyon olayı kuyruğa başarıyla gönderildi.");
             }
         } catch (mqError) {
-            // mqChannel hatası ana akışı kesmez; yalnızca loglanır
             console.error('[MQ] Rezervasyon mesajı kuyruğa gönderilemedi:', mqError.message);
         }
 
-        // 2. GÜVENLİ SİMÜLASYON - Redis (redisClient)
+        // Sunum için: Redis Cache entegrasyonu
         try {
-            if (typeof redisClient !== 'undefined' && redisClient) {
+            const redisClient = req.app.get('redisClient');
+            if (redisClient) {
                 await redisClient.set(
                     `booking:${newBooking._id}`,
                     JSON.stringify(newBooking),
                     { EX: 3600 }
                 );
+                console.log("💾 [Redis] Yeni rezervasyon önbelleğe alındı.");
             }
         } catch (redisError) {
-            // redisClient hatası ana akışı kesmez; yalnızca loglanır
             console.error('[Redis] Rezervasyon önbelleğe alınamadı:', redisError.message);
         }
 
