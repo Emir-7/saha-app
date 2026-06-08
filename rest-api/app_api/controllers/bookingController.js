@@ -5,6 +5,7 @@ const Field = mongoose.model('Field');
 // 6 - Yeni Rezervasyon Talebi Oluşturma
 const createBooking = async (req, res) => {
     try {
+        console.log("🚨 [DEBUG] Frontend'den Gelen İstek Verisi (req.body):", req.body);
         // 1. ESNEK VERİ YAKALAMA
         const actualField = req.body.fieldId || req.body.field || req.body.sahaId;
         const actualUser  = req.body.userId  || req.body.user  || req.body.kullaniciId;
@@ -12,10 +13,16 @@ const createBooking = async (req, res) => {
         const timeSlot    = req.body.timeSlot || null;
 
         if (!actualField) {
-            return res.status(400).json({ error: 'Saha ID (fieldId) değeri eksik.' });
+            return res.status(400).json({ success: false, message: "Eksik veri var! (Saha ID eksik)", reqBody: req.body });
         }
         if (!actualUser) {
-            return res.status(400).json({ error: 'Kullanıcı ID (userId veya user) değeri eksik.' });
+            return res.status(400).json({ success: false, message: "Eksik veri var! (Kullanıcı ID eksik)", reqBody: req.body });
+        }
+        if (!date) {
+            return res.status(400).json({ success: false, message: "Eksik veri var! (Tarih - date eksik)", reqBody: req.body });
+        }
+        if (!timeSlot) {
+            return res.status(400).json({ success: false, message: "Eksik veri var! (Saat - timeSlot eksik)", reqBody: req.body });
         }
 
         if (!mongoose.Types.ObjectId.isValid(actualField)) {
@@ -75,7 +82,12 @@ const createBooking = async (req, res) => {
         // 3. KESİN BAŞARI MESAJI
         res.status(201).json({ message: 'saha kiralama işlemi başarıyla tamamlandı', booking: newBooking });
     } catch (error) {
-        res.status(500).json({ error: 'Rezervasyon isteği işlenirken hata oluştu.', details: error.message });
+        return res.status(500).json({ 
+            success: false, 
+            message: "Backend'de kritik bir hata oluştu", 
+            error: error.message,
+            stack: error.stack
+        });
     }
 };
 
