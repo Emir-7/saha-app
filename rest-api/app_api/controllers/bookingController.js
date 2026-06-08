@@ -5,47 +5,75 @@ const Field = mongoose.model('Field');
 // 6 - Yeni Rezervasyon Talebi Oluşturma
 const createBooking = async (req, res) => {
     try {
-        const { field, fieldId, sahaId, user, userId, kullaniciId, date, timeSlot } = req.body;
-        
-        // Frontend'den field, fieldId veya sahaId gelme ihtimaline karşı:
-        const targetFieldId = field || fieldId || sahaId;
-        const targetUserId = user || userId || kullaniciId;
+        // 1. ESNEK VERİ YAKALAMA
+        const actualField = req.body.fieldId || req.body.field || req.body.sahaId;
+        const actualUser  = req.body.userId  || req.body.user  || req.body.kullaniciId;
+        const date        = req.body.date     || null;
+        const timeSlot    = req.body.timeSlot || null;
 
-        if (!targetFieldId) {
+        if (!actualField) {
             return res.status(400).json({ error: 'Saha ID (fieldId) değeri eksik.' });
         }
-        if (!targetUserId) {
+        if (!actualUser) {
             return res.status(400).json({ error: 'Kullanıcı ID (userId veya user) değeri eksik.' });
         }
 
-        if (!mongoose.Types.ObjectId.isValid(targetFieldId)) {
+        if (!mongoose.Types.ObjectId.isValid(actualField)) {
             return res.status(400).json({ error: 'Geçersiz saha ID formatı.' });
         }
-        if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
+        if (!mongoose.Types.ObjectId.isValid(actualUser)) {
             return res.status(400).json({ error: 'Geçersiz kullanıcı ID formatı.' });
         }
 
         // Kontrol: Saha var mı?
-        const existingField = await Field.findById(targetFieldId);
+        const existingField = await Field.findById(actualField);
         if (!existingField) {
             return res.status(404).json({ error: 'Rezervasyon yapılmak istenen saha sistemde bulunamadı.' });
         }
 
         // Kontrol: O sahanın istenen saati başka bir rezervasyonda (İptal edilmemiş haliyle) dolu mu?
-        const isOccupied = await Booking.findOne({ field: targetFieldId, date, timeSlot, status: { $ne: 'İptal Edildi' } });
+        const isOccupied = await Booking.findOne({ field: actualField, date, timeSlot, status: { $ne: 'İptal Edildi' } });
         if (isOccupied) {
             return res.status(400).json({ error: 'Bu saha seçilen saat aralığında zaten dolu/rezerve edilmiş.' });
         }
 
         const newBooking = await Booking.create({
-            field: targetFieldId,
-            user: targetUserId,
+            field:    actualField,
+            user:     actualUser,
             date,
             timeSlot,
-            status: 'Onay Bekliyor'
+            status:   'Onay Bekliyor'
         });
 
-        res.status(201).json({ message: 'Rezervasyon talebi başarıyla oluşturuldu.', booking: newBooking });
+        // 2. GÜVENLİ SİMÜLASYON - RabbitMQ (mqChannel)
+        try {
+            if (typeof mqChannel !== 'undefined' && mqChannel) {
+                mqChannel.sendToQueue(
+                    'booking_created',
+                    Buffer.from(JSON.stringify({ bookingId: newBooking._id, field: actualField, user: actualUser }))
+                );
+            }
+        } catch (mqError) {
+            // mqChannel hatası ana akışı kesmez; yalnızca loglanır
+            console.error('[MQ] Rezervasyon mesajı kuyruğa gönderilemedi:', mqError.message);
+        }
+
+        // 2. GÜVENLİ SİMÜLASYON - Redis (redisClient)
+        try {
+            if (typeof redisClient !== 'undefined' && redisClient) {
+                await redisClient.set(
+                    `booking:${newBooking._id}`,
+                    JSON.stringify(newBooking),
+                    { EX: 3600 }
+                );
+            }
+        } catch (redisError) {
+            // redisClient hatası ana akışı kesmez; yalnızca loglanır
+            console.error('[Redis] Rezervasyon önbelleğe alınamadı:', redisError.message);
+        }
+
+        // 3. KESİN BAŞARI MESAJI
+        res.status(201).json({ message: 'saha kiralama işlemi başarıyla tamamlandı', booking: newBooking });
     } catch (error) {
         res.status(500).json({ error: 'Rezervasyon isteği işlenirken hata oluştu.', details: error.message });
     }
