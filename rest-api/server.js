@@ -2,6 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
+// 📥 REDIS VE AMQPLIB (RABBITMQ) KÜTÜPHANELERİNİ DAHİL ET
+const { createClient } = require('redis');
+const amqp = require('amqplib');
+
 // Veritabanı bağlantısı ve Mongoose modellerini projeye dahil et
 require('./app_api/models/db');
 
@@ -22,6 +26,43 @@ app.use(cors({
   },
   credentials: true
 }));
+
+// ==========================================
+// 🛡️ 5. MADDE: ADVANCED TECHNOLOGIES BAĞLANTI KATMANLARI
+// ==========================================
+
+// 🟥 1. REDIS BAĞLANTI AYARI (Sistem Çökmesini Önleyen Catch Yapılı)
+const redisClient = createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379'
+});
+
+redisClient.connect()
+  .then(() => console.log('🚀 Redis Hafıza Katmanı Başarıyla Bağlandı.'))
+  .catch(err => console.log('⚠️ Redis Bağlantı Hatası (Sistem MongoDB ile devam ediyor):', err.message));
+
+// İsteklerin route dosyalarında kullanılabilmesi için redisClient'ı express'e bağlıyoruz
+app.set('redisClient', redisClient);
+
+// 🟨 2. RABBITMQ BAĞLANTI VE KUYRUK OLUŞTURMA AYARI
+async function initRabbitMQ() {
+  try {
+    const connection = await amqp.connect(process.env.RABBITMQ_URL || 'amqp://localhost');
+    const channel = await connection.createChannel();
+    const queue = 'booking_queue';
+
+    // Kuyruğu hafızada garantile (Durable: True)
+    await channel.assertQueue(queue, { durable: true });
+    console.log(`🚀 RabbitMQ '${queue}' Mesaj Kuyruğu Başarıyla Tetiklendi.`);
+    
+    // Controller dosyalarında erişebilmek için express nesnesine gömüyoruz
+    app.set('mqChannel', channel);
+  } catch (err) {
+    console.log('⚠️ RabbitMQ Bağlantı Hatası (Kuyruk mekanizması pasif, sistem çalışmaya devam ediyor):', err.message);
+  }
+}
+initRabbitMQ();
+s
+// ==========================================
 
 // Yönlendirme (Router) kullanımı
 app.use('/api', routesApi);
