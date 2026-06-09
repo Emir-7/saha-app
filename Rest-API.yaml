@@ -1,0 +1,378 @@
+openapi: 3.0.3
+info:
+  title: Saha-app Akıllı Halı Saha Rezervasyon Sistemi
+  version: 1.0.0
+  description: >
+    Bu API, halı saha oyuncuları ve işletmecileri için geliştirilen Saha-app platformunun 
+    arka plan (backend) servisidir. .NET 8 ve modern web mimarilerine tam uyumlu şekilde 
+    tasarlanmıştır.
+  contact:
+    name: Emirhan Fidan
+    email: fidanemir40@gmail.com
+
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Yerel geliştirme sunucusu (Development)
+
+tags:
+  - name: auth
+    description: Kayıt olma ve güvenli giriş işlemleri
+  - name: users
+    description: Kullanıcı profili ve maç geçmişi yönetimi
+  - name: fields
+    description: Halı saha tanımlama ve listeleme işlemleri
+  - name: bookings
+    description: Rezervasyon oluşturma ve onaylama süreçleri
+  - name: admin
+    description: İşletme raporları ve sistem yönetimi
+
+security:
+  - bearerAuth: []
+
+paths:
+  # --- 1 & 2: Kimlik Doğrulama ---
+  /auth/register:
+    post:
+      tags: [auth]
+      summary: Üye Olma
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegisterInput'
+      responses:
+        "201":
+          description: Başarıyla kayıt olundu.
+        "400":
+          $ref: '#/components/responses/BadRequest'
+
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Giriş Yapma
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInput'
+      responses:
+        "200":
+          description: Giriş başarılı.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+
+  /admin/login:
+    post:
+      tags: [auth]
+      summary: Yönetici Girişi Yapma
+      operationId: adminLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInput'
+      responses:
+        "200":
+          description: Yönetici girişi başarılı.
+
+  # --- 3, 4, 5 & 8: Kullanıcı İşlemleri ---
+  /users/{userId}:
+    parameters:
+      - $ref: '#/components/parameters/UserIdParam'
+    get:
+      tags: [users]
+      summary: Profil Görüntüleme
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      tags: [users]
+      summary: Profil Güncelleme
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateInput'
+      responses:
+        "200":
+          description: Bilgiler güncellendi.
+
+  /users/{userId}/password:
+    patch:
+      tags: [users]
+      summary: Şifre Değiştirme
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeInput'
+      responses:
+        "200":
+          description: Şifre başarıyla güncellendi.
+
+  /users/{userId}/bookings:
+    get:
+      tags: [users]
+      summary: Maç Geçmişini İzleme
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+
+  # --- 9, 10, 11, 12 & 13: Saha İşlemleri ---
+  /fields:
+    get:
+      tags: [fields]
+      summary: Sahaları Listeleme
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Field'
+    post:
+      tags: [fields]
+      summary: Yeni Saha Tanımlama
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FieldInput'
+      responses:
+        "201":
+          description: Yeni saha eklendi.
+
+  /fields/{fieldId}:
+    parameters:
+      - $ref: '#/components/parameters/FieldIdParam'
+    get:
+      tags: [fields]
+      summary: Saha Bilgisi İnceleme
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Field'
+    put:
+      tags: [fields]
+      summary: Saha Bilgisi Güncelleme
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FieldInput'
+      responses:
+        "200":
+          description: Saha güncellendi.
+
+  /fields/{fieldId}/availability:
+    get:
+      tags: [fields]
+      summary: Boş Saatleri Sorgulama
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          example: "2026-03-20"
+      responses:
+        "200":
+          description: Müsait saatler listelendi.
+
+  # --- 6, 7 & 14: Rezervasyon İşlemleri ---
+  /bookings:
+    post:
+      tags: [bookings]
+      summary: Rezervasyon Yapma
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCreateInput'
+      responses:
+        "201":
+          description: Rezervasyon talebi alındı.
+
+  /bookings/{bookingId}:
+    delete:
+      tags: [bookings]
+      summary: Rezervasyon İptal Etme
+      responses:
+        "204":
+          description: İptal başarılı.
+
+  /bookings/{bookingId}/confirm:
+    patch:
+      tags: [bookings]
+      summary: Randevu Yönetme
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isConfirmed:
+                  type: boolean
+      responses:
+        "200":
+          description: Durum güncellendi.
+
+  # --- 15 & 16: Admin ve Destek ---
+  /admin/reports:
+    get:
+      tags: [admin]
+      summary: Gelir Raporu Alma
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Report'
+
+  /support/tickets:
+    post:
+      tags: [admin]
+      summary: Destek Talebi Açma
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupportInput'
+      responses:
+        "201":
+          description: Talebiniz iletildi.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    UserIdParam:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+    FieldIdParam:
+      name: fieldId
+      in: path
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id: { type: string }
+        firstName: { type: string }
+        lastName: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        role: { type: string, enum: [User, Admin] }
+
+    UserRegisterInput:
+      type: object
+      required: [email, password, firstName, lastName]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 6 }
+        firstName: { type: string }
+        lastName: { type: string }
+        phone: { type: string }
+
+    Field:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        address: { type: string }
+        pricePerHour: { type: number }
+        features: { type: array, items: { type: string } }
+        imageUrl: { type: string }
+
+    FieldInput:
+      type: object
+      required: [name, address, pricePerHour]
+      properties:
+        name: { type: string }
+        address: { type: string }
+        pricePerHour: { type: number }
+        features: { type: array, items: { type: string } }
+
+    Booking:
+      type: object
+      properties:
+        id: { type: string }
+        fieldId: { type: string }
+        fieldName: { type: string }
+        date: { type: string, format: date }
+        timeSlot: { type: string }
+        status: { type: string, enum: [Pending, Confirmed, Cancelled] }
+
+    BookingCreateInput:
+      type: object
+      required: [fieldId, date, timeSlot]
+      properties:
+        fieldId: { type: string }
+        date: { type: string, format: date }
+        timeSlot: { type: string, example: "20:00-21:00" }
+
+    Report:
+      type: object
+      properties:
+        totalRevenue: { type: number }
+        totalBookings: { type: integer }
+        popularFieldId: { type: string }
+
+    AuthToken:
+      type: object
+      properties:
+        token: { type: string }
+        expiresAt: { type: string, format: date-time }
+
+    Error:
+      type: object
+      properties:
+        message: { type: string }
+
+  responses:
+    BadRequest:
+      description: Geçersiz istek.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Yetkisiz erişim.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
