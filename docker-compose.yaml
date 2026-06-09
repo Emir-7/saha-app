@@ -1,13 +1,26 @@
 version: '3.8'
 
 services:
-  mongodb_kapsayici:
+  mongodb:
     image: mongo:latest
-    container_name: mongodb_kapsayici
+    container_name: mongodb
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+
+  redis_kapsayici:
+    image: redis:alpine
+    container_name: redis_kapsayici
+    ports:
+      - "6379:6379"
+
+  rabbitmq_kapsayici:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq_kapsayici
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
   sahaapp_api:
     build:
@@ -16,19 +29,23 @@ services:
     ports:
       - "9000:9000"
     environment:
-      - MONGO_URI=mongodb://mongodb_kapsayici:27017/SahaAppDB
+      - MONGO_URI=mongodb://mongodb:27017/SahaAppDB
       - PORT=9000
+      - REDIS_URL=redis://redis_kapsayici:6379
+      - RABBITMQ_URL=amqp://rabbitmq_kapsayici
     depends_on:
-      - mongodb_kapsayici
-
-  sahaapp_web:
-    build:
-      context: ./saha-app-web
-    container_name: sahaapp_web
-    ports:
-      - "3000:80"
-    depends_on:
-      - sahaapp_api
+      - mongodb
+      - redis_kapsayici
+      - rabbitmq_kapsayici
+  # --- WEB SERVİSİ GEÇİCİ OLARAK KAPALI ---
+  # sahaapp_web:
+  #   build:
+  #     context: ./saha-app-web
+  #   container_name: sahaapp_web
+  #   ports:
+  #     - "3000:80"
+  #   depends_on:
+  #     - sahaapp_api
 
 volumes:
   mongodb_data:
