@@ -1,4 +1,6 @@
 
+import { BASE_URL } from '../config';
+
 export const fetchApi = async (endpoint, options = {}) => {
     try {
         const url = `${BASE_URL}${endpoint}`;

@@ -32,17 +32,17 @@ export default function App() {
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  // // --------------- KULLANICI STATE'LERİ ---------------
-  // const [loginForm, setLoginForm] = useState({ email: '', password: '' });
-  // const [registerForm, setRegisterForm] = useState({ firstName: '', lastName: '', email: '', phone: '', password: '', confirmPassword: '' });
-  // const [userProfile, setUserProfile] = useState({});
-  // const [userBookings, setUserBookings] = useState([]);
-  // const [userActiveTab, setUserActiveTab] = useState('bookings');
+  // --------------- KULLANICI STATE'LERİ ---------------
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [registerForm, setRegisterForm] = useState({ firstName: '', lastName: '', email: '', phone: '', password: '', confirmPassword: '' });
+  const [userProfile, setUserProfile] = useState({});
+  const [userBookings, setUserBookings] = useState([]);
+  const [userActiveTab, setUserActiveTab] = useState('bookings');
 
-  // const [profileForm, setProfileForm] = useState({ firstName: '', lastName: '', phone: '' });
-  // const [bookingForm, setBookingForm] = useState({ field: '', date: '', timeSlot: '' });
-  // const [ticketForm, setTicketForm] = useState({ subject: '', message: '' });
-  // const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '' });
+  const [profileForm, setProfileForm] = useState({ firstName: '', lastName: '', phone: '' });
+  const [bookingForm, setBookingForm] = useState({ field: '', date: '', timeSlot: '' });
+  const [ticketForm, setTicketForm] = useState({ subject: '', message: '' });
+  const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '' });
 
   // --------------- ADMİN STATE'LERİ ---------------
   const [adminLoginForm, setAdminLoginForm] = useState({ email: '', password: '' });
@@ -105,155 +105,155 @@ export default function App() {
     }
   }, [session, view]);
 
-  // // --------------- AUTH & KONTROLLER ---------------
-  // const handleUserLogin = async () => {
-  //   if (!loginForm.email || !loginForm.password) {
-  //     return showAlert("⚠️ Eksik Bilgi", "Lütfen e-posta ve şifrenizi giriniz.");
-  //   }
-  //   try {
-  //     setGlobalLoading(true);
-  //     const res = await axios.post(`${BASE_URL}/auth/login`, loginForm);
+  // --------------- AUTH & KONTROLLER ---------------
+  const handleUserLogin = async () => {
+    if (!loginForm.email || !loginForm.password) {
+      return showAlert("⚠️ Eksik Bilgi", "Lütfen e-posta ve şifrenizi giriniz.");
+    }
+    try {
+      setGlobalLoading(true);
+      const res = await axios.post(`${BASE_URL}/auth/login`, loginForm);
 
-  //     // Backend 200 dönüp gövdede hata mesajı yollarsa diye ekstra koruma
-  //     if (res.data && res.data.error) {
-  //       return showAlert("❌ Giriş Başarısız", res.data.error);
-  //     }
+      // Backend 200 dönüp gövdede hata mesajı yollarsa diye ekstra koruma
+      if (res.data && res.data.error) {
+        return showAlert("❌ Giriş Başarısız", res.data.error);
+      }
 
-  //     setSession({ userId: res.data.userId, role: res.data.role });
-  //     setView('profile');
-  //     showAlert("✅ Başarılı", "Sisteme giriş yapıldı.");
-  //   } catch (err) {
-  //     showAlert("❌ Giriş Başarısız", getErrorMessage(err));
-  //   } finally {
-  //     setGlobalLoading(false);
-  //   }
-  // };
+      setSession({ userId: res.data.userId, role: res.data.role });
+      setView('profile');
+      showAlert("✅ Başarılı", "Sisteme giriş yapıldı.");
+    } catch (err) {
+      showAlert("❌ Giriş Başarısız", getErrorMessage(err));
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
 
-  // const handleAdminLogin = async () => {
-  //   if (!adminLoginForm.email || !adminLoginForm.password) {
-  //     return showAlert("⚠️ Eksik Bilgi", "Lütfen yönetici e-posta ve şifrenizi giriniz.");
-  //   }
-  //   try {
-  //     setGlobalLoading(true);
-  //     const res = await axios.post(`${BASE_URL}/admin/login`, adminLoginForm);
+  const handleAdminLogin = async () => {
+    if (!adminLoginForm.email || !adminLoginForm.password) {
+      return showAlert("⚠️ Eksik Bilgi", "Lütfen yönetici e-posta ve şifrenizi giriniz.");
+    }
+    try {
+      setGlobalLoading(true);
+      const res = await axios.post(`${BASE_URL}/admin/login`, adminLoginForm);
 
-  //     if (res.data && res.data.error) {
-  //       return showAlert("❌ Giriş Başarısız", res.data.error);
-  //     }
+      if (res.data && res.data.error) {
+        return showAlert("❌ Giriş Başarısız", res.data.error);
+      }
 
-  //     setSession({ userId: res.data.adminId, role: 'admin' });
-  //     setView('admin');
-  //     showAlert("✅ Başarılı", "Yönetici paneline geçiş yapıldı.");
-  //   } catch (err) {
-  //     showAlert("❌ Yönetici Girişi Başarısız", getErrorMessage(err));
-  //   } finally {
-  //     setGlobalLoading(false);
-  //   }
-  // };
+      setSession({ userId: res.data.adminId, role: 'admin' });
+      setView('admin');
+      showAlert("✅ Başarılı", "Yönetici paneline geçiş yapıldı.");
+    } catch (err) {
+      showAlert("❌ Yönetici Girişi Başarısız", getErrorMessage(err));
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
 
-  // const handleRegister = async () => {
-  //   if (!registerForm.firstName || !registerForm.lastName || !registerForm.email || !registerForm.password) {
-  //     return showAlert("⚠️ Eksik Bilgi", "Lütfen tüm zorunlu alanları eksiksiz doldurunuz.");
-  //   }
-  //   if (registerForm.password !== registerForm.confirmPassword) {
-  //     return showAlert("❌ Hata", "Şifreler birbiriyle eşleşmiyor!");
-  //   }
-  //   try {
-  //     setGlobalLoading(true);
-  //     const res = await axios.post(`${BASE_URL}/auth/register`, registerForm);
+  const handleRegister = async () => {
+    if (!registerForm.firstName || !registerForm.lastName || !registerForm.email || !registerForm.password) {
+      return showAlert("⚠️ Eksik Bilgi", "Lütfen tüm zorunlu alanları eksiksiz doldurunuz.");
+    }
+    if (registerForm.password !== registerForm.confirmPassword) {
+      return showAlert("❌ Hata", "Şifreler birbiriyle eşleşmiyor!");
+    }
+    try {
+      setGlobalLoading(true);
+      const res = await axios.post(`${BASE_URL}/auth/register`, registerForm);
 
-  //     if (res.data && res.data.error) {
-  //       return showAlert("❌ Kayıt Olunamadı", res.data.error);
-  //     }
+      if (res.data && res.data.error) {
+        return showAlert("❌ Kayıt Olunamadı", res.data.error);
+      }
 
-  //     showAlert("✅ Kayıt Başarılı", res.data?.message || "Hesabınız oluşturuldu. Lütfen giriş yapınız.");
-  //     setView('login');
-  //   } catch (err) {
-  //     showAlert("❌ Kayıt Olunamadı", getErrorMessage(err));
-  //   } finally {
-  //     setGlobalLoading(false);
-  //   }
-  // };
+      showAlert("✅ Kayıt Başarılı", res.data?.message || "Hesabınız oluşturuldu. Lütfen giriş yapınız.");
+      setView('login');
+    } catch (err) {
+      showAlert("❌ Kayıt Olunamadı", getErrorMessage(err));
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
 
-  // // --------------- MÜŞTERİ FONKSİYONLARI VE KONTROLLERİ ---------------
-  // const handleCreateBooking = async () => {
-  //   if (!bookingForm.field) return showAlert("⚠️ Eksik Seçim", "Lütfen kiralamak istediğiniz sahayı seçiniz.");
-  //   if (!bookingForm.date) return showAlert("⚠️ Eksik Seçim", "Lütfen oynamak istediğiniz tarihi seçiniz.");
-  //   if (!bookingForm.timeSlot) return showAlert("⚠️ Eksik Seçim", "Lütfen oynamak istediğiniz saat aralığını seçiniz.");
+  // --------------- MÜŞTERİ FONKSİYONLARI VE KONTROLLERİ ---------------
+  const handleCreateBooking = async () => {
+    if (!bookingForm.field) return showAlert("⚠️ Eksik Seçim", "Lütfen kiralamak istediğiniz sahayı seçiniz.");
+    if (!bookingForm.date) return showAlert("⚠️ Eksik Seçim", "Lütfen oynamak istediğiniz tarihi seçiniz.");
+    if (!bookingForm.timeSlot) return showAlert("⚠️ Eksik Seçim", "Lütfen oynamak istediğiniz saat aralığını seçiniz.");
 
-  //   try {
-  //     setGlobalLoading(true);
-  //     const payload = {
-  //       fieldId: bookingForm.field, field: bookingForm.field,
-  //       userId: session.userId, user: session.userId,
-  //       date: bookingForm.date,
-  //       timeSlot: bookingForm.timeSlot,
-  //     };
-  //     const res = await axios.post(`${BASE_URL}/bookings`, payload);
+    try {
+      setGlobalLoading(true);
+      const payload = {
+        fieldId: bookingForm.field, field: bookingForm.field,
+        userId: session.userId, user: session.userId,
+        date: bookingForm.date,
+        timeSlot: bookingForm.timeSlot,
+      };
+      const res = await axios.post(`${BASE_URL}/bookings`, payload);
 
-  //     if (res.data && res.data.error) {
-  //       return showAlert("❌ Rezervasyon Hatası", res.data.error);
-  //     }
+      if (res.data && res.data.error) {
+        return showAlert("❌ Rezervasyon Hatası", res.data.error);
+      }
 
-  //     showAlert('✅ Rezervasyon Başarılı', res.data?.message || 'Saha kiralama talebiniz başarıyla alındı.');
-  //     setBookingForm({ field: '', date: '', timeSlot: '' });
-  //     loadUserData();
-  //     setUserActiveTab('bookings');
-  //   } catch (err) {
-  //     showAlert("❌ Rezervasyon Hatası", getErrorMessage(err));
-  //   } finally {
-  //     setGlobalLoading(false);
-  //   }
-  // };
+      showAlert('✅ Rezervasyon Başarılı', res.data?.message || 'Saha kiralama talebiniz başarıyla alındı.');
+      setBookingForm({ field: '', date: '', timeSlot: '' });
+      loadUserData();
+      setUserActiveTab('bookings');
+    } catch (err) {
+      showAlert("❌ Rezervasyon Hatası", getErrorMessage(err));
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
 
-  // const handleCancelBooking = async (bookingId) => {
-  //   try {
-  //     const res = await axios.delete(`${BASE_URL}/bookings/${bookingId}`);
-  //     showAlert("ℹ️ Bilgi", res.data?.message || "Rezervasyonunuz başarıyla iptal edildi.");
-  //     loadUserData();
-  //   } catch (err) {
-  //     showAlert("❌ İptal Hatası", getErrorMessage(err));
-  //   }
-  // };
+  const handleCancelBooking = async (bookingId) => {
+    try {
+      const res = await axios.delete(`${BASE_URL}/bookings/${bookingId}`);
+      showAlert("ℹ️ Bilgi", res.data?.message || "Rezervasyonunuz başarıyla iptal edildi.");
+      loadUserData();
+    } catch (err) {
+      showAlert("❌ İptal Hatası", getErrorMessage(err));
+    }
+  };
 
-  // const handleProfileUpdate = async () => {
-  //   if (!profileForm.firstName || !profileForm.lastName) {
-  //     return showAlert("⚠️ Uyarı", "Ad ve Soyad alanları boş bırakılamaz.");
-  //   }
-  //   try {
-  //     const res = await axios.put(`${BASE_URL}/users/${session.userId}`, profileForm);
-  //     showAlert("✅ Güncellendi", res.data?.message || "Profil bilgileriniz kaydedildi.");
-  //     loadUserData();
-  //   } catch (err) {
-  //     showAlert("❌ Hata", getErrorMessage(err));
-  //   }
-  // };
+  const handleProfileUpdate = async () => {
+    if (!profileForm.firstName || !profileForm.lastName) {
+      return showAlert("⚠️ Uyarı", "Ad ve Soyad alanları boş bırakılamaz.");
+    }
+    try {
+      const res = await axios.put(`${BASE_URL}/users/${session.userId}`, profileForm);
+      showAlert("✅ Güncellendi", res.data?.message || "Profil bilgileriniz kaydedildi.");
+      loadUserData();
+    } catch (err) {
+      showAlert("❌ Hata", getErrorMessage(err));
+    }
+  };
 
-  // const handlePasswordChange = async () => {
-  //   if (!passwordForm.oldPassword || !passwordForm.newPassword) {
-  //     return showAlert("⚠️ Uyarı", "Lütfen eski ve yeni şifrenizi giriniz.");
-  //   }
-  //   try {
-  //     const res = await axios.patch(`${BASE_URL}/users/${session.userId}/password`, passwordForm);
-  //     showAlert("✅ Şifre Değiştirildi", res.data?.message || "Şifreniz güvenli bir şekilde güncellendi.");
-  //     setPasswordForm({ oldPassword: '', newPassword: '' });
-  //   } catch (err) {
-  //     showAlert("❌ Hata", getErrorMessage(err));
-  //   }
-  // };
+  const handlePasswordChange = async () => {
+    if (!passwordForm.oldPassword || !passwordForm.newPassword) {
+      return showAlert("⚠️ Uyarı", "Lütfen eski ve yeni şifrenizi giriniz.");
+    }
+    try {
+      const res = await axios.patch(`${BASE_URL}/users/${session.userId}/password`, passwordForm);
+      showAlert("✅ Şifre Değiştirildi", res.data?.message || "Şifreniz güvenli bir şekilde güncellendi.");
+      setPasswordForm({ oldPassword: '', newPassword: '' });
+    } catch (err) {
+      showAlert("❌ Hata", getErrorMessage(err));
+    }
+  };
 
-  // const handleTicketSubmit = async () => {
-  //   if (!ticketForm.subject || !ticketForm.message) {
-  //     return showAlert("⚠️ Uyarı", "Lütfen destek talebi için konu ve mesaj alanlarını doldurunuz.");
-  //   }
-  //   try {
-  //     const res = await axios.post(`${BASE_URL}/support/tickets`, { user: session.userId, subject: ticketForm.subject, message: ticketForm.message });
-  //     showAlert("✅ Talep İletildi", res.data?.message || "Destek talebiniz yöneticilere ulaştı.");
-  //     setTicketForm({ subject: '', message: '' });
-  //   } catch (err) {
-  //     showAlert("❌ Gönderim Hatası", getErrorMessage(err));
-  //   }
-  // };
+  const handleTicketSubmit = async () => {
+    if (!ticketForm.subject || !ticketForm.message) {
+      return showAlert("⚠️ Uyarı", "Lütfen destek talebi için konu ve mesaj alanlarını doldurunuz.");
+    }
+    try {
+      const res = await axios.post(`${BASE_URL}/support/tickets`, { user: session.userId, subject: ticketForm.subject, message: ticketForm.message });
+      showAlert("✅ Talep İletildi", res.data?.message || "Destek talebiniz yöneticilere ulaştı.");
+      setTicketForm({ subject: '', message: '' });
+    } catch (err) {
+      showAlert("❌ Gönderim Hatası", getErrorMessage(err));
+    }
+  };
 
   // --------------- ADMİN FONKSİYONLARI VE KONTROLLERİ ---------------
   const handleBookingStatus = async (id, status) => {
