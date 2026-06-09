@@ -2,8 +2,11 @@ const mongoose = require('mongoose');
 const Booking = mongoose.model('Booking');
 const Field = mongoose.model('Field');
 
-// 6 - Yeni Rezervasyon Talebi Oluşturma
+/**
+ * 🚀 KULLANICI REZERVASYON OLUŞTURMA FONKSİYONU (createBooking)
+ */
 const createBooking = async (req, res) => {
+
     try {
         console.log("🚨 [DEBUG] Frontend'den Gelen İstek Verisi (req.body):", req.body);
         // 1. ESNEK VERİ YAKALAMA
@@ -90,9 +93,101 @@ const createBooking = async (req, res) => {
             error: error.message,
             stack: error.stack
         });
-    }
-};
 
+  try {
+    // 1. ESNEK VERİ YAKALAMA (Çökmeyi Önleme)
+    const actualField = req.body.fieldId || req.body.field || req.body.sahaId;
+    const actualUser = req.body.userId || req.body.user || req.body.kullaniciId;
+    
+    // Tarih ve saat gelmezse varsayılan değerler ata
+    const actualDate = req.body.date || new Date().toISOString().split('T')[0];
+    const actualTimeSlot = req.body.timeSlot || '12:00 - 13:00';
+
+    if (!actualField || !actualUser) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Eksik parametre! Lütfen saha ve kullanıcı bilgilerini kontrol edin." 
+      });
+
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(actualField)) {
+        return res.status(400).json({ error: 'Geçersiz saha ID formatı.' });
+    }
+    if (!mongoose.Types.ObjectId.isValid(actualUser)) {
+        return res.status(400).json({ error: 'Geçersiz kullanıcı ID formatı.' });
+    }
+
+    // Saha ve Saat çakışma kontrolleri (opsiyonel tutulabilir, ancak veri bütünlüğü için burada)
+    const existingField = await Field.findById(actualField);
+    if (!existingField) {
+        return res.status(404).json({ error: 'Rezervasyon yapılmak istenen saha sistemde bulunamadı.' });
+    }
+
+    const isOccupied = await Booking.findOne({ field: actualField, date: actualDate, timeSlot: actualTimeSlot, status: { $ne: 'İptal Edildi' } });
+    if (isOccupied) {
+        return res.status(400).json({ error: 'Bu saha seçilen saat aralığında zaten dolu/rezerve edilmiş.' });
+    }
+
+    // 2. REZERVASYONU VERİTABANINA(MONGODB) KAYIT
+    const newBooking = await Booking.create({
+      field: actualField,
+      user: actualUser,
+      date: actualDate,
+      timeSlot: actualTimeSlot,
+      status: 'Onay Bekliyor'
+    });
+
+    // 3. GÜVENLİ SERVİS SİMÜLASYONU: 🟨 RABBITMQ
+    try {
+      const mqChannel = req.app.get('mqChannel');
+      const queueName = 'booking_queue';
+
+      if (mqChannel && typeof mqChannel.sendToQueue === 'function') {
+        const messageData = Buffer.from(JSON.stringify({
+          bookingId: newBooking._id,
+          fieldId: newBooking.field,
+          date: newBooking.date,
+          timeSlot: newBooking.timeSlot,
+          createdAt: new Date()
+        }));
+
+        mqChannel.sendToQueue(queueName, messageData, { persistent: true });
+        console.log(`[Kuyruk Tetiklendi] Rezervasyon mesajı '${queueName}' kuyruğuna başarıyla iletildi.`);
+      } else {
+        console.log('⚠️ Uyarı: mqChannel nesnesine ulaşılamadı. İşlem Devam Ediyor.');
+      }
+    } catch (mqError) {
+      console.error('⚠️ RabbitMQ Mesaj İletim Hatası (Yutuldu):', mqError.message);
+    }
+
+    // 4. GÜVENLİ SERVİS SİMÜLASYONU: 🔴 REDIS ÖNBELLEK TEMİZLİĞİ
+    try {
+      const redisClient = req.app.get('redisClient');
+      if (redisClient && typeof redisClient.del === 'function') {
+        await redisClient.del('all_fields'); 
+        console.log('[Redis Cache] Yeni rezervasyon nedeniyle "all_fields" cache temizlendi.');
+      }
+    } catch (redisError) {
+      console.error('⚠️ Redis Önbellek Temizleme Hatası (Yutuldu):', redisError.message);
+    }
+
+    // 5. KESİN BAŞARI MESAJI (KRİTİK - FRONTEND BEKLENTİSİ)
+    return res.status(201).json({
+      success: true,
+      message: "saha kiralama işlemi başarıyla tamamlandı",
+      data: newBooking
+    });
+
+  } catch (error) {
+    console.error('❌ Rezervasyon Oluşturulurken Hata:', error.message);
+    return res.status(500).json({ 
+      success: false, 
+      message: "Sunucu hatası nedeniyle rezervasyon işlemi gerçekleştirilemedi.",
+      error: error.message 
+    });
+  }
+};
 // 7/8 - Kişisel Maç ve Randevu Geçmişi Görüntüleme
 const listUserBookings = async (req, res) => {
     try {

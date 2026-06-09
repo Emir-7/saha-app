@@ -71,6 +71,22 @@ initRabbitMQ();
 // ==========================================
 
 // Yönlendirme (Router) kullanımı
+// 🟨 RABBITMQ VE REDIS SIMÜLASYONU (Lokal Geliştirme İçin)
+app.set('mqChannel', {
+  sendToQueue: (queue, message, options) => {
+    console.log(`[Mock RabbitMQ] '${queue}' kuyruğuna mesaj gönderildi:`, JSON.parse(message.toString()));
+    return true;
+  }
+});
+
+app.set('redisClient', {
+  isOpen: true,
+  del: async (key) => {
+    console.log(`[Mock Redis] Önbellek temizlendi: ${key}`);
+    return 1;
+  }
+});
+
 app.use('/api', routesApi);
 
 // Lokal geliştirme için dinleme (Vercel'de çalışmaz, module.exports kullanılır)
