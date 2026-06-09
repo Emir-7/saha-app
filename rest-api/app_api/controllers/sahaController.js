@@ -12,7 +12,7 @@ const listFields = async (req, res) => {
             try {
                 const cachedFields = await redisClient.get(cacheKey);
                 if (cachedFields) {
-                    console.log('⚡ [Redis Cache] Sahalar cache\'den getirildi.');
+                    console.log('⚡ [TEST-LOG] Veri Redis Cache\'ten getirildi.');
                     return res.status(200).json(JSON.parse(cachedFields));
                 }
             } catch (cacheErr) {
@@ -21,6 +21,7 @@ const listFields = async (req, res) => {
         }
 
         const fields = await Field.find();
+        console.log("🔍 [TEST-LOG] Veri MongoDB'den getirildi.");
 
         if (redisClient) {
             try {

@@ -42,15 +42,15 @@ services:
       - redis_kapsayici
       - rabbitmq_kapsayici
 
-  # Frontend Web Servisi
-  sahaapp_web:
-    build:
-      context: ./saha-app-web
-    container_name: sahaapp_web
-    ports:
-      - "3000:80"
-    depends_on:
-      - sahaapp_api
+  # Frontend Web Servisi (Geçici Olarak Devre Dışı Bırakıldı)
+  # sahaapp_web:
+  #   build:
+  #     context: ./saha-app-web
+  #   container_name: sahaapp_web
+  #   ports:
+  #     - "3000:80"
+  #   depends_on:
+  #     - sahaapp_api
 
 volumes:
   mongodb_data:

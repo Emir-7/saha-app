@@ -60,7 +60,7 @@ const createBooking = async (req, res) => {
                     'booking_queue',
                     Buffer.from(JSON.stringify({ bookingId: newBooking._id, field: actualField, user: actualUser, date, timeSlot }))
                 );
-                console.log("🚀 [RabbitMQ] Rezervasyon olayı kuyruğa başarıyla gönderildi.");
+                console.log(`🚀 [TEST-LOG] Mesaj RabbitMQ kuyruğuna başarıyla iletildi: ${newBooking._id}`);
             }
         } catch (mqError) {
             console.error('[MQ] Rezervasyon mesajı kuyruğa gönderilemedi:', mqError.message);

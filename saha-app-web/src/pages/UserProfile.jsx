@@ -1,33 +1,29 @@
 import React, { useState, useEffect } from 'react';
-<<<<<<< HEAD
+
 import { User, Key, CalendarClock, History, Settings, X, CheckCircle, CreditCard, ChevronDown, LifeBuoy, Send } from 'lucide-react';
-=======
-import { User, Key, CalendarClock, History, Settings, X, CheckCircle, CreditCard, ChevronDown } from 'lucide-react';
->>>>>>> origin/HSKaplan
+
 import { fetchApi } from '../utils/api';
 
 const UserProfile = ({ session }) => {
     const [activeTab, setActiveTab] = useState('bookings');
-    
+
     const [userData, setUserData] = useState(null);
     const [bookings, setBookings] = useState([]);
     const [fields, setFields] = useState([]);
-    
+
     const [loading, setLoading] = useState(true);
     const [alert, setAlert] = useState(null);
-    
+
     // Form States
     const [profileForm, setProfileForm] = useState({ firstName: '', lastName: '', phone: '' });
     const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '' });
     const [bookingForm, setBookingForm] = useState({ field: '', date: '', timeSlot: '' });
-
-<<<<<<< HEAD
     // REQ-16: Destek Talebi Form State
     const [ticketForm, setTicketForm] = useState({ subject: '', message: '' });
     const [ticketLoading, setTicketLoading] = useState(false);
 
-=======
->>>>>>> origin/HSKaplan
+
+
     // Verileri Yükle
     useEffect(() => {
         const loadData = async () => {
@@ -38,12 +34,12 @@ const UserProfile = ({ session }) => {
                     fetchApi(`/users/${session.userId}/bookings`),
                     fetchApi('/fields')
                 ]);
-                
+
                 setUserData(userRes);
                 setProfileForm({ firstName: userRes.firstName, lastName: userRes.lastName, phone: userRes.phone || '' });
                 setBookings(bookingsRes);
                 setFields(fieldsRes);
-                
+
             } catch (err) {
                 showAlert('Hata: Bilgiler yüklenemedi.', 'error');
             } finally {
@@ -97,18 +93,18 @@ const UserProfile = ({ session }) => {
                 body: JSON.stringify({ ...bookingForm, user: session.userId })
             });
             showAlert(newBooking.message);
-<<<<<<< HEAD
+
             setBookingForm({ field: '', date: '', timeSlot: '' });
-            
-=======
+
+
             setBookingForm({ field: '', date: '', timeSlot: '' }); // Reset
-            
+
             // Listeyi yenile
->>>>>>> origin/HSKaplan
+
             const freshBookings = await fetchApi(`/users/${session.userId}/bookings`);
             setBookings(freshBookings);
             setActiveTab('bookings');
-            
+
         } catch (err) {
             showAlert(err.message, 'error');
         }
@@ -117,7 +113,7 @@ const UserProfile = ({ session }) => {
     // 4. Rezervasyon İptali (DELETE)
     const handleCancelBooking = async (bookingId) => {
         if (!window.confirm("Bu rezervasyonu iptal etmek istediğinize emin misiniz?")) return;
-        
+
         try {
             const res = await fetchApi(`/bookings/${bookingId}`, { method: 'DELETE' });
             showAlert(res.message);
@@ -127,7 +123,6 @@ const UserProfile = ({ session }) => {
         }
     };
 
-<<<<<<< HEAD
     // REQ-16: Destek Talebi Gönderme (POST /api/support/tickets)
     const handleTicketSubmit = async (e) => {
         e.preventDefault();
@@ -150,8 +145,7 @@ const UserProfile = ({ session }) => {
         }
     };
 
-=======
->>>>>>> origin/HSKaplan
+
     if (loading) return <div style={{ textAlign: 'center', padding: '100px', fontSize: '18px', color: '#64748b' }}>Bilgileriniz yükleniyor...</div>;
 
     const navBtnStyle = (tab) => ({
@@ -164,7 +158,7 @@ const UserProfile = ({ session }) => {
 
     return (
         <div style={{ maxWidth: '1000px', margin: '40px auto', padding: '0 20px' }}>
-            
+
             {/* Üst Karşılama Alanı */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '30px', padding: '25px', background: 'white', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
                 <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '32px', fontWeight: 'bold' }}>
@@ -172,36 +166,35 @@ const UserProfile = ({ session }) => {
                 </div>
                 <div>
                     <h1 style={{ margin: '0 0 5px 0', fontSize: '28px', color: '#1e293b' }}>Merhaba, {userData?.firstName}</h1>
-                    <p style={{ margin: 0, color: '#64748b', display: 'flex', alignItems: 'center', gap: '6px' }}><CreditCard size={16}/> Standart Oyuncu</p>
+                    <p style={{ margin: 0, color: '#64748b', display: 'flex', alignItems: 'center', gap: '6px' }}><CreditCard size={16} /> Standart Oyuncu</p>
                 </div>
             </div>
 
             {/* Uyarı Mesajları */}
             {alert && (
                 <div style={{ background: alert.type === 'error' ? '#fee2e2' : '#dcfce3', color: alert.type === 'error' ? '#b91c1c' : '#15803d', padding: '15px 20px', borderRadius: '10px', marginBottom: '25px', display: 'flex', alignItems: 'center', gap: '10px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-                    {alert.type === 'error' ? <X size={20}/> : <CheckCircle size={20}/>}
+                    {alert.type === 'error' ? <X size={20} /> : <CheckCircle size={20} />}
                     {alert.message}
                 </div>
             )}
 
             {/* İçerik Paneli */}
             <div style={{ background: 'white', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
-                
+
                 {/* Menü Bar */}
                 <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', background: '#f8fafc', overflowX: 'auto' }}>
-                    <button style={navBtnStyle('bookings')} onClick={() => setActiveTab('bookings')}><History size={18}/> Maç Geçmişim</button>
-                    <button style={navBtnStyle('new-booking')} onClick={() => setActiveTab('new-booking')}><CalendarClock size={18}/> Saha Kirala</button>
-                    <button style={navBtnStyle('profile')} onClick={() => setActiveTab('profile')}><Settings size={18}/> Profil Ayarları</button>
-                    <button style={navBtnStyle('security')} onClick={() => setActiveTab('security')}><Key size={18}/> Şifre Değiştir</button>
-<<<<<<< HEAD
+                    <button style={navBtnStyle('bookings')} onClick={() => setActiveTab('bookings')}><History size={18} /> Maç Geçmişim</button>
+                    <button style={navBtnStyle('new-booking')} onClick={() => setActiveTab('new-booking')}><CalendarClock size={18} /> Saha Kirala</button>
+                    <button style={navBtnStyle('profile')} onClick={() => setActiveTab('profile')}><Settings size={18} /> Profil Ayarları</button>
+                    <button style={navBtnStyle('security')} onClick={() => setActiveTab('security')}><Key size={18} /> Şifre Değiştir</button>
+
                     {/* REQ-16: Destek Talebi sekmesi */}
-                    <button style={navBtnStyle('support')} onClick={() => setActiveTab('support')}><LifeBuoy size={18}/> Destek Talebi</button>
-=======
->>>>>>> origin/HSKaplan
+                    <button style={navBtnStyle('support')} onClick={() => setActiveTab('support')}><LifeBuoy size={18} /> Destek Talebi</button>
+
                 </div>
 
                 <div style={{ padding: '30px' }}>
-                    
+
                     {/* TAB: Maç Geçmişim (Rezervasyonlar) */}
                     {activeTab === 'bookings' && (
                         <div>
@@ -211,11 +204,11 @@ const UserProfile = ({ session }) => {
                             ) : (
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
                                     {bookings.map(b => (
-                                        <div key={b._id} style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', position: 'relative', transition: 'box-shadow 0.2s', cursor: 'default' }} onMouseEnter={(e)=>e.currentTarget.style.boxShadow='0 10px 25px rgba(0,0,0,0.05)'} onMouseLeave={(e)=>e.currentTarget.style.boxShadow='none'}>
+                                        <div key={b._id} style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', position: 'relative', transition: 'box-shadow 0.2s', cursor: 'default' }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.05)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'none'}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
                                                 <div>
                                                     <h3 style={{ margin: '0 0 5px 0', fontSize: '18px', color: '#1e293b' }}>{b.field?.name || 'Saha Silinmiş'}</h3>
-                                                    <span style={{ fontSize: '13px', background: b.status==='Onaylandı' ? '#dcfce3' : b.status==='İptal Edildi' ? '#fee2e2' : '#fef9c3', color: b.status==='Onaylandı' ? '#15803d' : b.status==='İptal Edildi' ? '#b91c1c' : '#854d0e', padding: '4px 8px', borderRadius: '20px', fontWeight: 'bold' }}>
+                                                    <span style={{ fontSize: '13px', background: b.status === 'Onaylandı' ? '#dcfce3' : b.status === 'İptal Edildi' ? '#fee2e2' : '#fef9c3', color: b.status === 'Onaylandı' ? '#15803d' : b.status === 'İptal Edildi' ? '#b91c1c' : '#854d0e', padding: '4px 8px', borderRadius: '20px', fontWeight: 'bold' }}>
                                                         {b.status}
                                                     </span>
                                                 </div>
@@ -225,9 +218,9 @@ const UserProfile = ({ session }) => {
                                                 <div style={{ background: '#f1f5f9', padding: '6px 10px', borderRadius: '6px' }}>📅 {new Date(b.date).toLocaleDateString('tr-TR')}</div>
                                                 <div style={{ background: '#f1f5f9', padding: '6px 10px', borderRadius: '6px' }}>⏰ {b.timeSlot}</div>
                                             </div>
-                                            
+
                                             {b.status !== 'İptal Edildi' && (
-                                                <button onClick={() => handleCancelBooking(b._id)} style={{ width: '100%', padding: '10px', background: '#fee2e2', color: '#ef4444', border: '1px solid #fecaca', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={(e)=>e.target.style.background='#fecaca'} onMouseLeave={(e)=>e.target.style.background='#fee2e2'}>
+                                                <button onClick={() => handleCancelBooking(b._id)} style={{ width: '100%', padding: '10px', background: '#fee2e2', color: '#ef4444', border: '1px solid #fecaca', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={(e) => e.target.style.background = '#fecaca'} onMouseLeave={(e) => e.target.style.background = '#fee2e2'}>
                                                     İptal Et
                                                 </button>
                                             )}
@@ -245,7 +238,7 @@ const UserProfile = ({ session }) => {
                             <form onSubmit={handleCreateBooking} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '8px', color: '#475569', fontWeight: 'bold', fontSize: '14px' }}>Saha Seçimi</label>
-                                    <select required value={bookingForm.field} onChange={e => setBookingForm({...bookingForm, field: e.target.value})} style={inputStyle}>
+                                    <select required value={bookingForm.field} onChange={e => setBookingForm({ ...bookingForm, field: e.target.value })} style={inputStyle}>
                                         <option value="">-- Listeden Bir Saha Seçin --</option>
                                         {fields.map(f => (<option key={f._id} value={f._id}>{f.name} (₺{f.pricePerHour}/Saat) - {f.location}</option>))}
                                     </select>
@@ -253,11 +246,11 @@ const UserProfile = ({ session }) => {
                                 <div style={{ display: 'flex', gap: '20px' }}>
                                     <div style={{ flex: 1 }}>
                                         <label style={{ display: 'block', marginBottom: '8px', color: '#475569', fontWeight: 'bold', fontSize: '14px' }}>Tarih</label>
-                                        <input type="date" required value={bookingForm.date} onChange={e => setBookingForm({...bookingForm, date: e.target.value})} style={inputStyle} min={new Date().toISOString().split('T')[0]}/>
+                                        <input type="date" required value={bookingForm.date} onChange={e => setBookingForm({ ...bookingForm, date: e.target.value })} style={inputStyle} min={new Date().toISOString().split('T')[0]} />
                                     </div>
                                     <div style={{ flex: 1 }}>
                                         <label style={{ display: 'block', marginBottom: '8px', color: '#475569', fontWeight: 'bold', fontSize: '14px' }}>Saat Aralığı</label>
-                                        <select required value={bookingForm.timeSlot} onChange={e => setBookingForm({...bookingForm, timeSlot: e.target.value})} style={inputStyle}>
+                                        <select required value={bookingForm.timeSlot} onChange={e => setBookingForm({ ...bookingForm, timeSlot: e.target.value })} style={inputStyle}>
                                             <option value="">Saat Seçin</option>
                                             <option value="18:00 - 19:00">18:00 - 19:00</option>
                                             <option value="19:00 - 20:00">19:00 - 20:00</option>
@@ -281,16 +274,16 @@ const UserProfile = ({ session }) => {
                                 <div style={{ display: 'flex', gap: '15px' }}>
                                     <div style={{ flex: 1 }}>
                                         <label style={labelStyle}>Adınız</label>
-                                        <input type="text" value={profileForm.firstName} onChange={e => setProfileForm({...profileForm, firstName: e.target.value})} style={inputStyle} required/>
+                                        <input type="text" value={profileForm.firstName} onChange={e => setProfileForm({ ...profileForm, firstName: e.target.value })} style={inputStyle} required />
                                     </div>
                                     <div style={{ flex: 1 }}>
                                         <label style={labelStyle}>Soyadınız</label>
-                                        <input type="text" value={profileForm.lastName} onChange={e => setProfileForm({...profileForm, lastName: e.target.value})} style={inputStyle} required/>
+                                        <input type="text" value={profileForm.lastName} onChange={e => setProfileForm({ ...profileForm, lastName: e.target.value })} style={inputStyle} required />
                                     </div>
                                 </div>
                                 <div>
                                     <label style={labelStyle}>Telefon Numaranız</label>
-                                    <input type="tel" value={profileForm.phone} onChange={e => setProfileForm({...profileForm, phone: e.target.value})} style={inputStyle} />
+                                    <input type="tel" value={profileForm.phone} onChange={e => setProfileForm({ ...profileForm, phone: e.target.value })} style={inputStyle} />
                                 </div>
                                 <div style={{ opacity: 0.6, cursor: 'not-allowed' }}>
                                     <label style={labelStyle}>Kayıtlı E-posta (Değiştirilemez)</label>
@@ -304,28 +297,28 @@ const UserProfile = ({ session }) => {
                     {/* TAB: Şifre Değiştirme */}
                     {activeTab === 'security' && (
                         <div style={{ maxWidth: '500px', margin: '0 auto' }}>
-                            <h2 style={{ fontSize: '20px', margin: '0 0 20px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}><Key color="#f59e0b"/> Güvenlik Ayarları</h2>
+                            <h2 style={{ fontSize: '20px', margin: '0 0 20px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}><Key color="#f59e0b" /> Güvenlik Ayarları</h2>
                             <form onSubmit={handlePasswordChange} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                                 <div>
                                     <label style={labelStyle}>Mevcut Şifreniz</label>
-                                    <input type="password" value={passwordForm.oldPassword} onChange={e => setPasswordForm({...passwordForm, oldPassword: e.target.value})} style={inputStyle} required minLength="6"/>
+                                    <input type="password" value={passwordForm.oldPassword} onChange={e => setPasswordForm({ ...passwordForm, oldPassword: e.target.value })} style={inputStyle} required minLength="6" />
                                 </div>
                                 <div>
                                     <label style={labelStyle}>Yeni Şifreniz</label>
-                                    <input type="password" value={passwordForm.newPassword} onChange={e => setPasswordForm({...passwordForm, newPassword: e.target.value})} style={inputStyle} required minLength="6"/>
+                                    <input type="password" value={passwordForm.newPassword} onChange={e => setPasswordForm({ ...passwordForm, newPassword: e.target.value })} style={inputStyle} required minLength="6" />
                                 </div>
-                                <button type="submit" style={{...btnPrimary, background: '#f59e0b', color: 'white'}}>Güvenli Olarak Şifreyi Güncelle</button>
+                                <button type="submit" style={{ ...btnPrimary, background: '#f59e0b', color: 'white' }}>Güvenli Olarak Şifreyi Güncelle</button>
                             </form>
                         </div>
                     )}
 
-<<<<<<< HEAD
+
                     {/* TAB: REQ-16 Destek Talebi */}
                     {activeTab === 'support' && (
                         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
                             <div style={{ marginBottom: '24px' }}>
                                 <h2 style={{ fontSize: '20px', margin: '0 0 8px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <LifeBuoy color="#3b82f6" size={22}/> Destek Merkezi
+                                    <LifeBuoy color="#3b82f6" size={22} /> Destek Merkezi
                                 </h2>
                                 <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>
                                     Bir sorun mu yaşıyorsunuz? Bize bildirin, en kısa sürede geri dönelim.
@@ -387,8 +380,7 @@ const UserProfile = ({ session }) => {
                         </div>
                     )}
 
-=======
->>>>>>> origin/HSKaplan
+
                 </div>
             </div>
         </div>
