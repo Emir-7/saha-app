@@ -4,7 +4,35 @@ const Field = mongoose.model('Field');
 // 9 - Sahaları listeleme
 const listFields = async (req, res) => {
     try {
+        // Sunum için: Redis Cache entegrasyonu
+        const redisClient = req.app.get('redisClient');
+        const cacheKey = 'fields:all';
+
+        if (redisClient) {
+            try {
+                const cachedFields = await redisClient.get(cacheKey);
+                if (cachedFields) {
+                    console.log('⚡ [TEST-LOG] Veri Redis Cache\'ten getirildi.');
+                    return res.status(200).json(JSON.parse(cachedFields));
+                }
+            } catch (cacheErr) {
+                console.error('⚠️ [Redis Cache] Cache okuma hatası:', cacheErr.message);
+            }
+        }
+
         const fields = await Field.find();
+        console.log("🔍 [TEST-LOG] Veri MongoDB'den getirildi.");
+
+        if (redisClient) {
+            try {
+                // Sunum için: Redis Cache entegrasyonu
+                await redisClient.set(cacheKey, JSON.stringify(fields), { EX: 3600 });
+                console.log('💾 [Redis Cache] Sahalar cache\'e kaydedildi.');
+            } catch (cacheErr) {
+                console.error('⚠️ [Redis Cache] Cache yazma hatası:', cacheErr.message);
+            }
+        }
+
         res.status(200).json(fields);
     } catch (error) {
         res.status(500).json({ error: 'Sahalar listelenirken bir hata oluştu.', details: error.message });
@@ -31,6 +59,13 @@ const getField = async (req, res) => {
 const addField = async (req, res) => {
     try {
         const newField = await Field.create(req.body);
+
+        // Sunum için: Redis Cache entegrasyonu (Yeni saha eklenince önbelleği geçersiz kıl)
+        const redisClient = req.app.get('redisClient');
+        if (redisClient) {
+            await redisClient.del('fields:all').catch(err => console.error('⚠️ [Redis Cache] Cache silme hatası:', err.message));
+        }
+
         res.status(201).json(newField);
     } catch (error) {
         res.status(400).json({ error: 'Saha eklenirken hata oluştu. Lütfen gönderilen verileri kontrol edin.', details: error.message });
@@ -47,6 +82,12 @@ const updateField = async (req, res) => {
             return res.status(404).json({ error: 'Güncellenecek saha bulunamadı.' });
         }
 
+        // Sunum için: Redis Cache entegrasyonu (Saha güncellenince önbelleği geçersiz kıl)
+        const redisClient = req.app.get('redisClient');
+        if (redisClient) {
+            await redisClient.del('fields:all').catch(err => console.error('⚠️ [Redis Cache] Cache silme hatası:', err.message));
+        }
+
         res.status(200).json(updatedField);
     } catch (error) {
         res.status(400).json({ error: 'Saha bilgileri güncellenirken hata oluştu.', details: error.message });
@@ -61,6 +102,12 @@ const deleteField = async (req, res) => {
 
         if (!deletedField) {
             return res.status(404).json({ error: 'Silinecek saha bulunamadı.' });
+        }
+
+        // Sunum için: Redis Cache entegrasyonu (Saha silinince önbelleği geçersiz kıl)
+        const redisClient = req.app.get('redisClient');
+        if (redisClient) {
+            await redisClient.del('fields:all').catch(err => console.error('⚠️ [Redis Cache] Cache silme hatası:', err.message));
         }
 
         res.status(200).json({ message: 'Saha başarıyla silindi.', deletedId: fieldId });

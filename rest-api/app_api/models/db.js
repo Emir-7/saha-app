@@ -1,17 +1,19 @@
 const mongoose = require('mongoose');
 
-// docker-compose ortam değişkeni veya varsayılan bağlantı adresi (127.0.0.1)
+// dotenv yüklemesini garanti altına almak için process.env kontrolü
 const dbURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/SahaAppDB';
 
 mongoose.connect(dbURI)
-    .catch((err) => console.error('MongoDB bağlantı hatası:', err));
+    .catch((err) => {
+        console.error('MongoDB bağlantı hatası:', err.message);
+    });
 
 // Mongoose olay (event) dinleyicileri
 mongoose.connection.on('connected', () => {
-    console.log(`Mongoose ${dbURI} adresine başarıyla bağlandı`);
+    console.log(`Mongoose bağlantısı başarılı. Bağlanılan adres: ${dbURI}`);
 });
 mongoose.connection.on('error', err => {
-    console.log(`Mongoose bağlantı hatası: ${err}`);
+    console.log(`Mongoose bağlantı hatası: ${err.message}`);
 });
 mongoose.connection.on('disconnected', () => {
     console.log('Mongoose bağlantısı kesildi');

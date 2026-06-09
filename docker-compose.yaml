@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # MongoDB Servisi (Konteyner içi erişim adı: mongodb)
   mongodb:
     image: mongo:latest
     container_name: mongodb
@@ -9,12 +10,14 @@ services:
     volumes:
       - mongodb_data:/data/db
 
+  # Redis Servisi
   redis_kapsayici:
     image: redis:alpine
     container_name: redis_kapsayici
     ports:
       - "6379:6379"
 
+  # RabbitMQ Servisi
   rabbitmq_kapsayici:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq_kapsayici
@@ -22,6 +25,7 @@ services:
       - "5672:5672"
       - "15672:15672"
 
+  # Backend API Servisi
   sahaapp_api:
     build:
       context: ./rest-api
@@ -37,7 +41,8 @@ services:
       - mongodb
       - redis_kapsayici
       - rabbitmq_kapsayici
-  # --- WEB SERVİSİ GEÇİCİ OLARAK KAPALI ---
+
+  # Frontend Web Servisi (Geçici Olarak Devre Dışı Bırakıldı)
   # sahaapp_web:
   #   build:
   #     context: ./saha-app-web
