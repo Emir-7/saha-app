@@ -1,10 +1,14 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 
 // 📥 REDIS VE AMQPLIB (RABBITMQ) KÜTÜPHANELERİNİ DAHİL ET
 const { createClient } = require('redis');
 const amqp = require('amqplib');
+
+// Observability Middleware ve Gravity Agent Logger'ı dahil et
+const { logger, observabilityMiddleware } = require('./app_api/middleware/gravityLogger');
 
 // Veritabanı bağlantısı ve Mongoose modellerini projeye dahil et
 require('./app_api/models/db');
@@ -36,9 +40,16 @@ const redisClient = createClient({
   url: process.env.REDIS_URL || 'redis://localhost:6379'
 });
 
+let redisConnected = false;
 redisClient.connect()
-  .then(() => console.log('🚀 Redis Hafıza Katmanı Başarıyla Bağlandı.'))
-  .catch(err => console.log('⚠️ Redis Bağlantı Hatası (Sistem MongoDB ile devam ediyor):', err.message));
+  .then(() => {
+    redisConnected = true;
+    logger.info('Redis Hafıza Katmanı Başarıyla Bağlandı.');
+  })
+  .catch(err => {
+    redisConnected = false;
+    logger.error(`Redis Bağlantı Hatası (Sistem MongoDB ile devam ediyor): ${err.message}`);
+  });
 
 // İsteklerin route dosyalarında kullanılabilmesi için redisClient'ı express'e bağlıyoruz
 app.set('redisClient', redisClient);
@@ -52,23 +63,66 @@ async function initRabbitMQ() {
 
     // Kuyruğu hafızada garantile (Durable: True)
     await channel.assertQueue(queue, { durable: true });
-    console.log(`🚀 RabbitMQ '${queue}' Mesaj Kuyruğu Başarıyla Tetiklendi.`);
+    logger.info(`RabbitMQ '${queue}' Mesaj Kuyruğu Başarıyla Tetiklendi.`);
     
     // Controller dosyalarında erişebilmek için express nesnesine gömüyoruz
     app.set('mqChannel', channel);
+    app.set('rabbitmqConnected', true);
   } catch (err) {
-    console.log('⚠️ RabbitMQ Lokal Modda: Gerçek kuyruk sunucusu bulunamadı. Sistem simüle moduna alınıyor.');
+    logger.error(`RabbitMQ Lokal Modda: Gerçek kuyruk sunucusu bulunamadı. Sistem simüle moduna alınıyor. Hata: ${err.message}`);
     
     // 🛡️ LOKAL KORUMA: Bilgisayarda RabbitMQ yoksa uygulamanın kilitlenmesini önlemek için sahte (mock) bir obje bağlıyoruz
     app.set('mqChannel', {
-      sendToQueue: (q, msg) => console.log(`[Simüle Kuyruk] ${q} adresine mesaj gönderildi:`, msg.toString()),
+      sendToQueue: (q, msg) => logger.info(`[Simüle Kuyruk] ${q} adresine mesaj gönderildi: ${msg.toString()}`),
       assertQueue: () => Promise.resolve()
     });
+    app.set('rabbitmqConnected', false);
   }
 }
 initRabbitMQ();
 
+// 🔍 DOCKER ENTEGRASYON KANITI: Uygulama başlangıcında tüm servislerin durumunu kontrol eden HealthCheck fonksiyonu
+async function runHealthCheck() {
+  setTimeout(async () => {
+    logger.info('--- 🏥 SİSTEM SAĞLIK VE BAĞLANTI RAPORU (HEALTH CHECK) ---');
+    
+    // 1. API Servisi Durumu
+    logger.info('API Servisi: ÇALIŞIYOR (UP)');
+    
+    // 2. MongoDB Durumu
+    const mongoState = mongoose.connection.readyState;
+    const mongoStatus = mongoState === 1 ? 'BAĞLI (UP)' : 'BAĞLI DEĞİL (DOWN)';
+    if (mongoState === 1) {
+      logger.info(`MongoDB Servis Durumu: ${mongoStatus}`);
+    } else {
+      logger.error(`MongoDB Servis Durumu: ${mongoStatus}`);
+    }
+    
+    // 3. Redis Durumu
+    const redisStatus = redisConnected ? 'BAĞLI (UP)' : 'BAĞLI DEĞİL (DOWN)';
+    if (redisConnected) {
+      logger.info(`Redis Servis Durumu: ${redisStatus}`);
+    } else {
+      logger.error(`Redis Servis Durumu: ${redisStatus}`);
+    }
+    
+    // 4. RabbitMQ Durumu
+    const rabbitmqConnected = app.get('rabbitmqConnected');
+    const rabbitmqStatus = rabbitmqConnected ? 'BAĞLI (UP)' : 'BAĞLI DEĞİL / SİMÜLE (DOWN)';
+    if (rabbitmqConnected) {
+      logger.info(`RabbitMQ Servis Durumu: ${rabbitmqStatus}`);
+    } else {
+      logger.error(`RabbitMQ Servis Durumu: ${rabbitmqStatus}`);
+    }
+    
+    logger.info('---------------------------------------------------------');
+  }, 3500);
+}
+runHealthCheck();
+
 // ==========================================
+// Observability Middleware: Rota işlemlerinden önce gelen istekleri izler
+app.use(observabilityMiddleware);
 
 // Yönlendirme (Router) kullanımı
 app.use('/api', routesApi);
@@ -77,7 +131,7 @@ app.use('/api', routesApi);
 if (process.env.NODE_ENV !== 'production') {
   const PORT = process.env.PORT || 9000;
   app.listen(PORT, () => {
-    console.log(`Saha-App API ${PORT} portunda başarıyla çalışıyor.`);
+    logger.info(`Saha-App API ${PORT} portunda başarıyla çalışıyor.`);
   });
 }
 
