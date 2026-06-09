@@ -9,6 +9,12 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   # Redis Servisi
   redis_kapsayici:
@@ -16,6 +22,12 @@ services:
     container_name: redis_kapsayici
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   # RabbitMQ Servisi
   rabbitmq_kapsayici:
@@ -24,6 +36,12 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   # Backend API Servisi
   sahaapp_api:
@@ -38,9 +56,18 @@ services:
       - REDIS_URL=redis://redis_kapsayici:6379
       - RABBITMQ_URL=amqp://rabbitmq_kapsayici
     depends_on:
-      - mongodb
-      - redis_kapsayici
-      - rabbitmq_kapsayici
+      mongodb:
+        condition: service_healthy
+      redis_kapsayici:
+        condition: service_healthy
+      rabbitmq_kapsayici:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"const http = require('http'); http.get('http://localhost:9000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
 
   # Frontend Web Servisi (Geçici Olarak Devre Dışı Bırakıldı)
   # sahaapp_web:
