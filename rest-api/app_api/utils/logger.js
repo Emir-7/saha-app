@@ -1,5 +1,5 @@
 /**
- * 📊 GRAVITY AGENT - STRUCTURED LOGGER
+ * 
  * ==========================================
  * Profesyonel seviyede yapılandırılmış loglama modülü.
  * Gravity Agent ve benzeri izleme araçları tarafından

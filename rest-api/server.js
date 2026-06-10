@@ -9,7 +9,7 @@ const amqp = require('amqplib');
 // 📊 MODERNIZATION: Yapılandırılmış Logger & Middleware
 const logger = require('./app_api/utils/logger');
 const observabilityMiddleware = require('./app_api/middlewares/observability');
-const { runHealthCheck } = require('./app_api/utils/healthCheck');
+const { runHealthCheck, startHealthCheckLoop } = require('./app_api/utils/healthCheck');
 
 // Veritabanı bağlantısı ve Mongoose modellerini projeye dahil et
 require('./app_api/models/db');
@@ -19,8 +19,23 @@ const routesApi = require('./app_api/routes/index');
 
 const app = express();
 
+// ==========================================
+// 🔭 OBSERVABILITY MIDDLEWARE — 1. KATMAN (EN ÜSTTE)
+// app oluşturulur oluşturulmaz, express.json() ve cors()'tan ÖNCE tanımlanır.
+// OPTIONS (CORS preflight) dahil HER isteği yakalar.
+// ==========================================
+app.use(observabilityMiddleware);
+
 app.use(express.json());
-const allowedOrigins = ['https://saha-app.onrender.com', 'https://saha-app-3iwt.vercel.app', 'http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:5173'];
+
+const allowedOrigins = [
+  'https://saha-app.onrender.com',
+  'https://saha-app-3iwt.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:5173',
+];
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
@@ -29,15 +44,8 @@ app.use(cors({
       callback(new Error('CORS mismatch'));
     }
   },
-  credentials: true
+  credentials: true,
 }));
-
-// ==========================================
-// 🔭 OBSERVABILITY MIDDLEWARE
-// Tüm API rotalarından ÖNCE çalışır.
-// Her isteğin METHOD, URL, Response Time ve Status Code bilgisini loglar.
-// ==========================================
-app.use(observabilityMiddleware);
 
 // ==========================================
 // 🏥 HEALTH CHECK ENDPOINT
@@ -55,7 +63,7 @@ app.get('/api/health', async (req, res) => {
 
 // 🟥 1. REDIS BAĞLANTI AYARI (Yapılandırılmış Loglama ile)
 const redisClient = createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379'
+  url: process.env.REDIS_URL || 'redis://localhost:6379',
 });
 
 redisClient.connect()
@@ -78,14 +86,38 @@ redisClient.connect()
 // İsteklerin route dosyalarında kullanılabilmesi için redisClient'ı express'e bağlıyoruz
 app.set('redisClient', redisClient);
 
-// 🟨 2. RABBITMQ BAĞLANTI VE KUYRUK OLUŞTURMA AYARI (Yapılandırılmış Loglama ile)
+// ==========================================
+// 🛡️ BAŞLANGIÇ GÜVENLİ VARSAYILANLAR — initRabbitMQ'dan ÖNCE set edilmeli!
+// initRabbitMQ() async olduğu için önce mock tanımlanır.
+// Bağlantı başarılı olursa app.set() gerçek channel'ı yazar.
+// ==========================================
+app.set('mqChannel', {
+  _isMock: true,
+  sendToQueue: (queue, message) => {
+    logger.debug('RabbitMQ-Mock', `[Başlangıç geçici mock] '${queue}' kuyruğuna mesaj`, { message: message.toString() });
+    return true;
+  },
+  assertQueue: () => Promise.resolve(),
+});
+
+app.set('redisClient', {
+  isOpen: false,
+  _isMock: true,
+  del: async (key) => {
+    logger.debug('Redis-Mock', `[Başlangıç geçici mock] Önbellek temizlendi: ${key}`);
+    return 1;
+  },
+});
+
+// 🟨 RABBITMQ BAĞLANTI VE KUYRUK OLUŞTURMA AYARI
+// NOT: Başlangıç mock'u YUKARDA set edildi. Bu fonksiyon başarılı bağlantıda
+//      app.set('mqChannel', channel) ile gerçek channel'ı yazar.
 async function initRabbitMQ() {
   try {
     const connection = await amqp.connect(process.env.RABBITMQ_URL || 'amqp://localhost');
     const channel = await connection.createChannel();
     const queue = 'booking_queue';
 
-    // Kuyruğu hafızada garantile (Durable: True)
     await channel.assertQueue(queue, { durable: true });
 
     logger.info('RabbitMQ', `🚀 RabbitMQ '${queue}' Mesaj Kuyruğu Başarıyla Tetiklendi.`, {
@@ -94,62 +126,49 @@ async function initRabbitMQ() {
       status: 'connected',
       durable: true,
     });
-    
-    // Controller dosyalarında erişebilmek için express nesnesine gömüyoruz
+
+    // ✅ Gerçek channel → mock'un üzerine yaz
     app.set('mqChannel', channel);
   } catch (err) {
-    logger.error('RabbitMQ', '⚠️ RabbitMQ Bağlantı Hatası — Sistem simüle moduna alınıyor.', {
+    logger.error('RabbitMQ', '⚠️ RabbitMQ Bağlantı Hatası — HealthCheck auto-recovery devralacak.', {
       error: err.message,
       url: process.env.RABBITMQ_URL || 'amqp://localhost',
-      fallback: 'mock-rabbitmq',
+      bilgi: 'Periyodik HealthCheck döngüsü her 20 saniyede yeniden bağlantı dener.',
     });
-    
-    // 🛡️ LOKAL KORUMA: Bilgisayarda RabbitMQ yoksa uygulamanın kilitlenmesini önlemek için sahte (mock) bir obje bağlıyoruz
-    app.set('mqChannel', {
-      sendToQueue: (q, msg) => {
-        logger.debug('RabbitMQ-Mock', `[Simüle Kuyruk] ${q} adresine mesaj gönderildi:`, { message: msg.toString() });
-        return true;
-      },
-      assertQueue: () => Promise.resolve()
-    });
+    // Mock zaten yukarıda set edildi, burada tekrar set etmeye gerek yok.
   }
 }
 initRabbitMQ();
 
 // ==========================================
+// 🛣️ ROTA TANIMI — observabilityMiddleware rotaya da ekleniyor
+// app.use seviyesinde zaten yukarıda tanımlı, burada da redundant
+// olarak ekleniyor — router-level bypass ihtimalini tamamen ortadan kaldırır.
+// ==========================================
+app.use('/api', observabilityMiddleware, routesApi);
 
-// 🟨 RABBITMQ VE REDIS SIMÜLASYONU (Lokal Geliştirme İçin — Fallback)
-app.set('mqChannel', {
-  sendToQueue: (queue, message, options) => {
-    logger.debug('RabbitMQ-Mock', `'${queue}' kuyruğuna mesaj gönderildi`, { message: JSON.parse(message.toString()) });
-    return true;
-  }
-});
-
-app.set('redisClient', {
-  isOpen: true,
-  del: async (key) => {
-    logger.debug('Redis-Mock', `Önbellek temizlendi: ${key}`);
-    return 1;
-  }
-});
-
-// Yönlendirme (Router) kullanımı
-app.use('/api', routesApi);
-
-// Lokal geliştirme için dinleme (Vercel'de çalışmaz, module.exports kullanılır)
-if (process.env.NODE_ENV !== 'production') {
-  const PORT = process.env.PORT || 9000;
-  app.listen(PORT, () => {
-    logger.info('Server', `🚀 Saha-App API ${PORT} portunda başarıyla çalışıyor.`);
-
-    // Uygulama başladıktan 2 saniye sonra HealthCheck raporunu çalıştır
-    // (Tüm bağlantıların kurulması için bekleme süresi)
-    setTimeout(async () => {
-      await runHealthCheck(app);
-    }, 2000);
+// ==========================================
+// 🚀 SUNUCU DİNLEME BLOĞU
+// Docker ve lokal geliştirme: PORT env değişkeni varsa her zaman dinle.
+// Vercel serverless: PORT yoktur, module.exports ile çalışır.
+// NOT: NODE_ENV !== 'production' kontrolü KALDIRILDI —
+//      docker-compose.yaml'da NODE_ENV=production tanımlı olduğu için
+//      bu kontrol Docker'da app.listen()'i engellerdi!
+// ==========================================
+const SERVER_PORT = process.env.PORT || 9000;
+app.listen(SERVER_PORT, () => {
+  logger.info('Server', `🚀 Saha-App API ${SERVER_PORT} portunda başarıyla çalışıyor.`, {
+    port: SERVER_PORT,
+    env: process.env.NODE_ENV || 'development',
+    observability: 'ACTIVE ✅',
   });
-}
+
+  // ⏱️ Periyodik HealthCheck döngüsünü başlat (her 10 saniyede bir)
+  // setInterval tabanlı — konteyner durduğunda anında DOWN tespit edilir.
+  setTimeout(() => {
+    startHealthCheckLoop(app);
+  }, 2000);
+});
 
 // Vercel serverless için export
 module.exports = app;
