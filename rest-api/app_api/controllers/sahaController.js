@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const Field = mongoose.model('Field');
+const User = mongoose.model('User');
 const logger = require('../utils/logger');
 
 // 9 - Sahaları listeleme
@@ -117,10 +119,33 @@ const deleteField = async (req, res) => {
     }
 };
 
+// 16 - Admin girişi
+const adminLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        const adminUser = await User.findOne({ email, role: 'admin' });
+        if (!adminUser) {
+            return res.status(404).json({ error: 'Admin hesabı bulunamadı.' });
+        }
+
+        // Bcrypt güvenlik entegrasyonu - şifre doğrulama
+        const isMatch = await bcrypt.compare(password, adminUser.password);
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Hatalı şifre girdiniz.' });
+        }
+
+        res.status(200).json({ message: 'Admin girişi başarılı', adminId: adminUser._id });
+    } catch (error) {
+        res.status(500).json({ error: 'Admin girişi sırasında sistemde hata oluştu.', details: error.message });
+    }
+};
+
 module.exports = {
     listFields,
     getField,
     addField,
     updateField,
-    deleteField
+    deleteField,
+    adminLogin
 };
