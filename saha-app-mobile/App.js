@@ -4,7 +4,17 @@ import {
   ScrollView, Alert, ActivityIndicator, Dimensions, Platform
 } from 'react-native';
 import axios from 'axios';
+<<<<<<< Updated upstream
 import DateTimePicker from '@react-native-community/datetimepicker';
+=======
+
+
+// HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI
+// import DateTimePicker from '@react-native-community/datetimepicker';
+>>>>>>> Stashed changes
+
+import DateTimePicker from '@react-native-community/datetimepicker';
+c794735127993cc6484efcbf657a7ebbe1a4e6dd
 
 // Canlı API Bağlantısı
 const BASE_URL = 'https://saha-app.onrender.com/api';
@@ -30,6 +40,29 @@ export default function App() {
   const [pendingCount, setPendingCount] = useState(0);
 
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+<<<<<<< Updated upstream
+  const [showDatePicker, setShowDatePicker] = useState(false);
+=======
+<<<<<<< HEAD
+  
+  // HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI
+  // const [showDatePicker, setShowDatePicker] = useState(false);
+>>>>>>> Stashed changes
+
+  // --------------- KULLANICI STATE'LERİ ---------------
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [registerForm, setRegisterForm] = useState({ firstName: '', lastName: '', email: '', phone: '', password: '', confirmPassword: '' });
+  const [userProfile, setUserProfile] = useState({});
+  const [userBookings, setUserBookings] = useState([]);
+  const [userActiveTab, setUserActiveTab] = useState('bookings');
+
+  const [profileForm, setProfileForm] = useState({ firstName: '', lastName: '', phone: '' });
+  const [bookingForm, setBookingForm] = useState({ field: '', date: '', timeSlot: '' });
+  const [ticketForm, setTicketForm] = useState({ subject: '', message: '' });
+<<<<<<< Updated upstream
+  const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '' });
+=======
+=======
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   // --------------- KULLANICI STATE'LERİ ---------------
@@ -43,6 +76,8 @@ export default function App() {
   const [bookingForm, setBookingForm] = useState({ field: '', date: '', timeSlot: '' });
   const [ticketForm, setTicketForm] = useState({ subject: '', message: '' });
   const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '' });
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
 
   // --------------- ADMİN STATE'LERİ ---------------
   const [adminLoginForm, setAdminLoginForm] = useState({ email: '', password: '' });
@@ -54,6 +89,31 @@ export default function App() {
   const [newFieldForm, setNewFieldForm] = useState({ name: '', pricePerHour: '', address: '' });
   const [adminProfile, setAdminProfile] = useState({ firstName: '', lastName: '', email: '', password: '' });
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+  // HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI
+  // const loadUserData = async () => {
+  //   if (!session?.userId) return;
+  //   try {
+  //     setGlobalLoading(true);
+  //     const [userRes, bookingsRes, fieldsRes] = await Promise.all([
+  //       axios.get(`${BASE_URL}/users/${session.userId}`).catch(() => ({ data: {} })),
+  //       axios.get(`${BASE_URL}/users/${session.userId}/bookings`).catch(() => ({ data: [] })),
+  //       axios.get(`${BASE_URL}/fields`).catch(() => ({ data: [] }))
+  //     ]);
+  //     setUserProfile(userRes.data);
+  //     setProfileForm({ firstName: userRes.data.firstName || '', lastName: userRes.data.lastName || '', phone: userRes.data.phone || '' });
+  //     setUserBookings(bookingsRes.data || []);
+  //     setAdminFields(fieldsRes.data || []);
+  //   } catch (err) {
+  //     console.log(err);
+  //   } finally {
+  //     setGlobalLoading(false);
+  //   }
+  // };
+=======
+>>>>>>> Stashed changes
   const loadUserData = async () => {
     if (!session?.userId) return;
     try {
@@ -73,6 +133,10 @@ export default function App() {
       setGlobalLoading(false);
     }
   };
+<<<<<<< Updated upstream
+=======
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
 
   const loadAdminData = async () => {
     if (!session?.userId) return;
@@ -101,11 +165,45 @@ export default function App() {
   useEffect(() => {
     if (session) {
       if (session.role === 'admin') loadAdminData();
+<<<<<<< Updated upstream
       else loadUserData();
+=======
+<<<<<<< HEAD
+      // HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI
+      // else loadUserData();
+=======
+      else loadUserData();
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
     }
   }, [session, view]);
 
   // --------------- AUTH & KONTROLLER ---------------
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+  // HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI
+  // const handleUserLogin = async () => {
+  //   if (!loginForm.email || !loginForm.password) {
+  //     return showAlert("⚠️ Eksik Bilgi", "Lütfen e-posta ve şifrenizi giriniz.");
+  //   }
+  //   try {
+  //     setGlobalLoading(true);
+  //     const res = await axios.post(`${BASE_URL}/auth/login`, loginForm);
+  //     if (res.data && res.data.error) {
+  //       return showAlert("❌ Giriş Başarısız", res.data.error);
+  //     }
+  //     setSession({ userId: res.data.userId, role: res.data.role });
+  //     setView('profile');
+  //     showAlert("✅ Başarılı", "Sisteme giriş yapıldı.");
+  //   } catch (err) {
+  //     showAlert("❌ Giriş Başarısız", getErrorMessage(err));
+  //   } finally {
+  //     setGlobalLoading(false);
+  //   }
+  // };
+=======
+>>>>>>> Stashed changes
   const handleUserLogin = async () => {
     if (!loginForm.email || !loginForm.password) {
       return showAlert("⚠️ Eksik Bilgi", "Lütfen e-posta ve şifrenizi giriniz.");
@@ -128,6 +226,10 @@ export default function App() {
       setGlobalLoading(false);
     }
   };
+<<<<<<< Updated upstream
+=======
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
 
   const handleAdminLogin = async () => {
     if (!adminLoginForm.email || !adminLoginForm.password) {
@@ -151,6 +253,127 @@ export default function App() {
     }
   };
 
+<<<<<<< Updated upstream
+  const handleRegister = async () => {
+    if (!registerForm.firstName || !registerForm.lastName || !registerForm.email || !registerForm.password) {
+      return showAlert("⚠️ Eksik Bilgi", "Lütfen tüm zorunlu alanları eksiksiz doldurunuz.");
+    }
+    if (registerForm.password !== registerForm.confirmPassword) {
+      return showAlert("❌ Hata", "Şifreler birbiriyle eşleşmiyor!");
+    }
+    try {
+      setGlobalLoading(true);
+      const res = await axios.post(`${BASE_URL}/auth/register`, registerForm);
+=======
+<<<<<<< HEAD
+  // HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI
+  // const handleRegister = async () => {
+  //   if (!registerForm.firstName || !registerForm.lastName || !registerForm.email || !registerForm.password) {
+  //     return showAlert("⚠️ Eksik Bilgi", "Lütfen tüm zorunlu alanları eksiksiz doldurunuz.");
+  //   }
+  //   if (registerForm.password !== registerForm.confirmPassword) {
+  //     return showAlert("❌ Hata", "Şifreler birbiriyle eşleşmiyor!");
+  //   }
+  //   try {
+  //     setGlobalLoading(true);
+  //     const res = await axios.post(`${BASE_URL}/auth/register`, registerForm);
+  //     if (res.data && res.data.error) {
+  //       return showAlert("❌ Kayıt Olunamadı", res.data.error);
+  //     }
+  //     showAlert("✅ Kayıt Başarılı", res.data?.message || "Hesabınız oluşturuldu. Lütfen giriş yapınız.");
+  //     setView('login');
+  //   } catch (err) {
+  //     showAlert("❌ Kayıt Olunamadı", getErrorMessage(err));
+  //   } finally {
+  //     setGlobalLoading(false);
+  //   }
+  // };
+>>>>>>> Stashed changes
+
+      if (res.data && res.data.error) {
+        return showAlert("❌ Kayıt Olunamadı", res.data.error);
+      }
+
+      showAlert("✅ Kayıt Başarılı", res.data?.message || "Hesabınız oluşturuldu. Lütfen giriş yapınız.");
+      setView('login');
+    } catch (err) {
+      showAlert("❌ Kayıt Olunamadı", getErrorMessage(err));
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
+
+  // --------------- MÜŞTERİ FONKSİYONLARI VE KONTROLLERİ ---------------
+  const handleCreateBooking = async () => {
+    if (!bookingForm.field) return showAlert("⚠️ Eksik Seçim", "Lütfen kiralamak istediğiniz sahayı seçiniz.");
+    if (!bookingForm.date) return showAlert("⚠️ Eksik Seçim", "Lütfen oynamak istediğiniz tarihi seçiniz.");
+    if (!bookingForm.timeSlot) return showAlert("⚠️ Eksik Seçim", "Lütfen oynamak istediğiniz saat aralığını seçiniz.");
+
+    try {
+      setGlobalLoading(true);
+      const payload = {
+        fieldId: bookingForm.field, field: bookingForm.field,
+        userId: session.userId, user: session.userId,
+        date: bookingForm.date,
+        timeSlot: bookingForm.timeSlot,
+      };
+      const res = await axios.post(`${BASE_URL}/bookings`, payload);
+
+      if (res.data && res.data.error) {
+        return showAlert("❌ Rezervasyon Hatası", res.data.error);
+      }
+
+      showAlert('✅ Rezervasyon Başarılı', res.data?.message || 'Saha kiralama talebiniz başarıyla alındı.');
+      setBookingForm({ field: '', date: '', timeSlot: '' });
+      loadUserData();
+      setUserActiveTab('bookings');
+    } catch (err) {
+      showAlert("❌ Rezervasyon Hatası", getErrorMessage(err));
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
+
+  const handleCancelBooking = async (bookingId) => {
+    try {
+      const res = await axios.delete(`${BASE_URL}/bookings/${bookingId}`);
+      showAlert("ℹ️ Bilgi", res.data?.message || "Rezervasyonunuz başarıyla iptal edildi.");
+      loadUserData();
+    } catch (err) {
+      showAlert("❌ İptal Hatası", getErrorMessage(err));
+    }
+  };
+
+  const handleProfileUpdate = async () => {
+    if (!profileForm.firstName || !profileForm.lastName) {
+      return showAlert("⚠️ Uyarı", "Ad ve Soyad alanları boş bırakılamaz.");
+    }
+    try {
+      const res = await axios.put(`${BASE_URL}/users/${session.userId}`, profileForm);
+      showAlert("✅ Güncellendi", res.data?.message || "Profil bilgileriniz kaydedildi.");
+      loadUserData();
+    } catch (err) {
+      showAlert("❌ Hata", getErrorMessage(err));
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (!passwordForm.oldPassword || !passwordForm.newPassword) {
+      return showAlert("⚠️ Uyarı", "Lütfen eski ve yeni şifrenizi giriniz.");
+    }
+    try {
+      const res = await axios.patch(`${BASE_URL}/users/${session.userId}/password`, passwordForm);
+      showAlert("✅ Şifre Değiştirildi", res.data?.message || "Şifreniz güvenli bir şekilde güncellendi.");
+      setPasswordForm({ oldPassword: '', newPassword: '' });
+    } catch (err) {
+      showAlert("❌ Hata", getErrorMessage(err));
+    }
+  };
+
+<<<<<<< Updated upstream
+=======
+  // Destek talebi gönderme Emirhan Fidan'ın sorumluluğundadır (Req 16)
+=======
   const handleRegister = async () => {
     if (!registerForm.firstName || !registerForm.lastName || !registerForm.email || !registerForm.password) {
       return showAlert("⚠️ Eksik Bilgi", "Lütfen tüm zorunlu alanları eksiksiz doldurunuz.");
@@ -242,6 +465,8 @@ export default function App() {
     }
   };
 
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
   const handleTicketSubmit = async () => {
     if (!ticketForm.subject || !ticketForm.message) {
       return showAlert("⚠️ Uyarı", "Lütfen destek talebi için konu ve mesaj alanlarını doldurunuz.");
@@ -319,15 +544,43 @@ export default function App() {
             <Text style={styles.heroSubtitle}>Süleyman Demirel Üniversitesi Bilgisayar Mühendisliği projesidir.</Text>
             {!session ? (
               <View style={{ width: '100%', gap: 10 }}>
+<<<<<<< Updated upstream
                 <TouchableOpacity style={styles.btnGreen} onPress={() => setView('register')}><Text style={styles.navBtnText}>Hemen Üye Ol</Text></TouchableOpacity>
                 <TouchableOpacity style={styles.btnOutline} onPress={() => setView('login')}><Text style={styles.navBtnTextDark}>Zaten Hesabım Var</Text></TouchableOpacity>
               </View>
             ) : (
               <TouchableOpacity style={styles.btnBlue} onPress={() => setView(session.role === 'admin' ? 'admin' : 'profile')}><Text style={styles.navBtnText}>Panelime Git</Text></TouchableOpacity>
+=======
+<<<<<<< HEAD
+                {/* HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI */}
+                {/* <TouchableOpacity style={styles.btnGreen} onPress={() => setView('register')}><Text style={styles.navBtnText}>Hemen Üye Ol</Text></TouchableOpacity> */}
+                {/* <TouchableOpacity style={styles.btnOutline} onPress={() => setView('login')}><Text style={styles.navBtnTextDark}>Zaten Hesabım Var</Text></TouchableOpacity> */}
+                
+                {/* Ekip İzolasyonu için doğrudan Tesis Yöneticisi Girişi aktif edilmiştir */}
+                <TouchableOpacity style={styles.btnBlue} onPress={() => setView('admin-login')}><Text style={styles.navBtnText}>Yönetici Girişi</Text></TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity style={styles.btnBlue} onPress={() => setView(session.role === 'admin' ? 'admin' : 'home')}><Text style={styles.navBtnText}>Panelime Git</Text></TouchableOpacity>
+=======
+                <TouchableOpacity style={styles.btnGreen} onPress={() => setView('register')}><Text style={styles.navBtnText}>Hemen Üye Ol</Text></TouchableOpacity>
+                <TouchableOpacity style={styles.btnOutline} onPress={() => setView('login')}><Text style={styles.navBtnTextDark}>Zaten Hesabım Var</Text></TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity style={styles.btnBlue} onPress={() => setView(session.role === 'admin' ? 'admin' : 'profile')}><Text style={styles.navBtnText}>Panelime Git</Text></TouchableOpacity>
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
             )}
           </View>
         )}
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+        {/* HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI */}
+        {/*
+=======
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
         {view === 'login' && (
           <View style={styles.authCard}>
             <Text style={styles.cardTitle}>Sisteme Giriş Yap</Text>
@@ -338,7 +591,18 @@ export default function App() {
             <Text style={styles.adminLink} onPress={() => setView('admin-login')}>Tesis Yöneticisi Girişi →</Text>
           </View>
         )}
+<<<<<<< Updated upstream
 
+=======
+<<<<<<< HEAD
+        */}
+
+        {/* HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI */}
+        {/*
+=======
+
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
         {view === 'register' && (
           <View style={styles.authCard}>
             <Text style={styles.cardTitle}>Hesap Oluştur</Text>
@@ -354,6 +618,13 @@ export default function App() {
             <Text style={styles.adminLink} onPress={() => setView('login')}>Zaten hesabınız var mı? Giriş Yapın</Text>
           </View>
         )}
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+        */}
+=======
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
 
         {view === 'admin-login' && (
           <View style={[styles.authCard, { backgroundColor: '#0f172a' }]}>
@@ -361,11 +632,27 @@ export default function App() {
             <TextInput style={[styles.input, { backgroundColor: '#1e293b', color: 'white', borderColor: '#334155' }]} placeholder="Yönetici E-posta" placeholderTextColor="#64748b" value={adminLoginForm.email} onChangeText={t => setAdminLoginForm({ ...adminLoginForm, email: t })} autoCapitalize="none" keyboardType="email-address" />
             <TextInput style={[styles.input, { backgroundColor: '#1e293b', color: 'white', borderColor: '#334155' }]} placeholder="Şifre" placeholderTextColor="#64748b" secureTextEntry value={adminLoginForm.password} onChangeText={t => setAdminLoginForm({ ...adminLoginForm, password: t })} />
             <TouchableOpacity style={[styles.btnBlue, { backgroundColor: '#ef4444' }]} onPress={handleAdminLogin}><Text style={styles.navBtnText}>Yönetici Girişi Yap</Text></TouchableOpacity>
+<<<<<<< Updated upstream
             <Text style={[styles.adminLink, { color: '#ef4444' }]} onPress={() => setView('login')}>← Müşteri Girişine Dön</Text>
           </View>
         )}
 
         {/* ----------------- MÜŞTERİ PANELİ EKRANLARI -----------------
+=======
+<<<<<<< HEAD
+          </View>
+        )}
+
+        {/* HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI */}
+        {/*
+=======
+            <Text style={[styles.adminLink, { color: '#ef4444' }]} onPress={() => setView('login')}>← Müşteri Girişine Dön</Text>
+          </View>
+        )}
+
+        {/* ----------------- MÜŞTERİ PANELİ EKRANLARI ----------------- */}
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
         {view === 'profile' && (
           <View style={styles.panelCard}>
             <Text style={styles.welcomeTitle}>Merhaba, {userProfile?.firstName}</Text>
@@ -401,15 +688,30 @@ export default function App() {
             {userActiveTab === 'new-booking' && (
               <View style={[styles.tabContentArea, { zIndex: 10 }]}>
                 <Text style={styles.sectionTitle}>Yeni Rezervasyon Talebi</Text>
+<<<<<<< Updated upstream
 
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
                 <Text style={styles.label}>1. Saha Seçimi</Text>
                 {adminFields.map(f => (
                   <TouchableOpacity key={f._id} style={[styles.selectorItem, bookingForm.field === f._id && styles.selectedItemStyle]} onPress={() => setBookingForm({ ...bookingForm, field: f._id })}>
                     <Text style={{ fontWeight: 'bold', color: bookingForm.field === f._id ? '#1d4ed8' : '#334155' }}>⚽ {f.name} (₺{f.pricePerHour}/Saat)</Text>
                   </TouchableOpacity>
                 ))}
+<<<<<<< Updated upstream
 
                 {/* 📅 TAKVİM BÖLÜMÜ */}
+=======
+<<<<<<< HEAD
+=======
+
+                {/* 📅 TAKVİM BÖLÜMÜ */}
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
                 <Text style={styles.label}>2. Tarih Seçimi (Takvim)</Text>
                 {Platform.OS === 'web' ? (
                   <input
@@ -425,6 +727,7 @@ export default function App() {
                       <Text style={{ color: bookingForm.date ? '#1e293b' : '#94a3b8', fontSize: 15 }}>{bookingForm.date || 'Takvimden tarih seçiniz...'}</Text>
                       <Text>📅</Text>
                     </TouchableOpacity>
+<<<<<<< Updated upstream
                     {showDatePicker && (
                       <DateTimePicker
                         value={bookingForm.date ? new Date(bookingForm.date) : new Date()}
@@ -439,12 +742,34 @@ export default function App() {
                 )}
 
                 {/* ⏰ SAAT DROPDOWN BÖLÜMÜ (TAM GÜN) */}
+=======
+<<<<<<< HEAD
+                  </>
+                )}
+=======
+                    {showDatePicker && (
+                      <DateTimePicker
+                        value={bookingForm.date ? new Date(bookingForm.date) : new Date()}
+                        mode="date" display="default" minimumDate={new Date()}
+                        onChange={(event, selectedDate) => {
+                          setShowDatePicker(false);
+                          if (selectedDate) setBookingForm({ ...bookingForm, date: selectedDate.toISOString().split('T')[0] });
+                        }}
+                      />
+                    )}
+                  </>
+                )}
+
+                {/* ⏰ SAAT DROPDOWN BÖLÜMÜ (TAM GÜN) */}
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
                 <Text style={styles.label}>3. Saat Aralığı</Text>
                 <View style={{ zIndex: 100, marginBottom: 20 }}>
                   <TouchableOpacity style={styles.dropdownHeader} activeOpacity={0.8} onPress={() => setShowTimeDropdown(!showTimeDropdown)}>
                     <Text style={{ color: bookingForm.timeSlot ? '#1e293b' : '#94a3b8', fontSize: 15 }}>{bookingForm.timeSlot || 'Lütfen saat seçiniz...'}</Text>
                     <Text style={{ color: '#94a3b8', fontSize: 12 }}>{showTimeDropdown ? '▲' : '▼'}</Text>
                   </TouchableOpacity>
+<<<<<<< Updated upstream
 
                   {showTimeDropdown && (
                     <View style={styles.dropdownList}>
@@ -471,6 +796,38 @@ export default function App() {
                   )}
                 </View>
 
+=======
+<<<<<<< HEAD
+                </View>
+=======
+
+                  {showTimeDropdown && (
+                    <View style={styles.dropdownList}>
+                      <ScrollView nestedScrollEnabled style={{ maxHeight: 180 }}>
+                        {[
+                          "09:00 - 10:00", "10:00 - 11:00", "11:00 - 12:00", "12:00 - 13:00",
+                          "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00",
+                          "17:00 - 18:00", "18:00 - 19:00", "19:00 - 20:00", "20:00 - 21:00",
+                          "21:00 - 22:00", "22:00 - 23:00", "23:00 - 00:00"
+                        ].map((slot, index) => (
+                          <TouchableOpacity
+                            key={slot}
+                            style={[styles.dropdownItem, index === 14 && { borderBottomWidth: 0 }]}
+                            onPress={() => {
+                              setBookingForm({ ...bookingForm, timeSlot: slot });
+                              setShowTimeDropdown(false);
+                            }}
+                          >
+                            <Text style={{ color: '#334155', fontSize: 15, fontWeight: bookingForm.timeSlot === slot ? 'bold' : 'normal' }}>⏰ {slot}</Text>
+                          </TouchableOpacity>
+                        ))}
+                      </ScrollView>
+                    </View>
+                  )}
+                </View>
+
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
                 <TouchableOpacity style={styles.btnBlue} onPress={handleCreateBooking}><Text style={styles.navBtnText}>Rezervasyon Yap</Text></TouchableOpacity>
               </View>
             )}
@@ -503,8 +860,16 @@ export default function App() {
               </View>
             )}
           </View>
+<<<<<<< Updated upstream
         )}  }
         
+=======
+        )}
+<<<<<<< HEAD
+        */}
+=======
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
 
         {/* ----------------- ADMİN KONTROL PANELİ EKRANLARI ----------------- */}
         {view === 'admin' && (
@@ -596,6 +961,15 @@ export default function App() {
           <Text style={[styles.tabBarIcon, view === 'home' && styles.activeIcon]}>🏠</Text>
           <Text style={[styles.tabBarLabel, view === 'home' && styles.activeLabel]}>Ana Sayfa</Text>
         </TouchableOpacity>
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+        
+        {/* HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI */}
+        {/*
+=======
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
         {!session ? (
           <TouchableOpacity style={styles.tabBarItem} onPress={() => setView('login')}>
             <Text style={[styles.tabBarIcon, (view === 'login' || view === 'register') && styles.activeIcon]}>🔑</Text>
@@ -613,6 +987,34 @@ export default function App() {
             </TouchableOpacity>
           </>
         )}
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+        */}
+
+        {/* Ekip İzolasyonu için sadece Yöneticiye özel alt navigasyon aktif bırakılmıştır */}
+        {!session ? (
+          <TouchableOpacity style={styles.tabBarItem} onPress={() => setView('admin-login')}>
+            <Text style={[styles.tabBarIcon, view === 'admin-login' && styles.activeIcon]}>🔑</Text>
+            <Text style={[styles.tabBarLabel, view === 'admin-login' && styles.activeLabel]}>Yönetici Girişi</Text>
+          </TouchableOpacity>
+        ) : (
+          <>
+            {session.role === 'admin' && (
+              <TouchableOpacity style={styles.tabBarItem} onPress={() => setView('admin')}>
+                <Text style={[styles.tabBarIcon, view === 'admin' && styles.activeIcon]}>📊</Text>
+                <Text style={[styles.tabBarLabel, view === 'admin' && styles.activeLabel]}>Yönetici Paneli</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={styles.tabBarItem} onPress={() => { setSession(null); setView('home'); }}>
+              <Text style={[styles.tabBarIcon, { color: '#ef4444' }]}>🚪</Text>
+              <Text style={[styles.tabBarLabel, { color: '#ef4444' }]}>Çıkış Yap</Text>
+            </TouchableOpacity>
+          </>
+        )}
+=======
+>>>>>>> c794735127993cc6484efcbf657a7ebbe1a4e6dd
+>>>>>>> Stashed changes
       </View>
     </View>
   );
