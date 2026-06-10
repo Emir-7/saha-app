@@ -4,6 +4,10 @@ import {
   ScrollView, Alert, ActivityIndicator, Dimensions, Platform
 } from 'react-native';
 import axios from 'axios';
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/emirhan-fidan
 // HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI
 // import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -31,6 +35,10 @@ export default function App() {
   const [pendingCount, setPendingCount] = useState(0);
 
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+<<<<<<< HEAD
+=======
+  
+>>>>>>> origin/emirhan-fidan
   // HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI
   // const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -41,7 +49,10 @@ export default function App() {
   // const [userProfile, setUserProfile] = useState({});
   // const [userBookings, setUserBookings] = useState([]);
   // const [userActiveTab, setUserActiveTab] = useState('bookings');
+<<<<<<< HEAD
   // 
+=======
+>>>>>>> origin/emirhan-fidan
   // const [profileForm, setProfileForm] = useState({ firstName: '', lastName: '', phone: '' });
   // const [bookingForm, setBookingForm] = useState({ field: '', date: '', timeSlot: '' });
   // const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '' });
@@ -121,12 +132,18 @@ export default function App() {
   //   try {
   //     setGlobalLoading(true);
   //     const res = await axios.post(`${BASE_URL}/auth/login`, loginForm);
+<<<<<<< HEAD
   // 
   //     // Backend 200 dönüp gövdede hata mesajı yollarsa diye ekstra koruma
   //     if (res.data && res.data.error) {
   //       return showAlert("❌ Giriş Başarısız", res.data.error);
   //     }
   // 
+=======
+  //     if (res.data && res.data.error) {
+  //       return showAlert("❌ Giriş Başarısız", res.data.error);
+  //     }
+>>>>>>> origin/emirhan-fidan
   //     setSession({ userId: res.data.userId, role: res.data.role });
   //     setView('profile');
   //     showAlert("✅ Başarılı", "Sisteme giriş yapıldı.");
@@ -170,11 +187,17 @@ export default function App() {
   //   try {
   //     setGlobalLoading(true);
   //     const res = await axios.post(`${BASE_URL}/auth/register`, registerForm);
+<<<<<<< HEAD
   // 
   //     if (res.data && res.data.error) {
   //       return showAlert("❌ Kayıt Olunamadı", res.data.error);
   //     }
   // 
+=======
+  //     if (res.data && res.data.error) {
+  //       return showAlert("❌ Kayıt Olunamadı", res.data.error);
+  //     }
+>>>>>>> origin/emirhan-fidan
   //     showAlert("✅ Kayıt Başarılı", res.data?.message || "Hesabınız oluşturuldu. Lütfen giriş yapınız.");
   //     setView('login');
   //   } catch (err) {
@@ -184,12 +207,19 @@ export default function App() {
   //   }
   // };
 
+<<<<<<< HEAD
+=======
+  // --------------- MÜŞTERI FONKSİYONLARI VE KONTROLLERİ ---------------
+>>>>>>> origin/emirhan-fidan
   // HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI
   // const handleCreateBooking = async () => {
   //   if (!bookingForm.field) return showAlert("⚠️ Eksik Seçim", "Lütfen kiralamak istediğiniz sahayı seçiniz.");
   //   if (!bookingForm.date) return showAlert("⚠️ Eksik Seçim", "Lütfen oynamak istediğiniz tarihi seçiniz.");
   //   if (!bookingForm.timeSlot) return showAlert("⚠️ Eksik Seçim", "Lütfen oynamak istediğiniz saat aralığını seçiniz.");
+<<<<<<< HEAD
   // 
+=======
+>>>>>>> origin/emirhan-fidan
   //   try {
   //     setGlobalLoading(true);
   //     const payload = {
@@ -199,11 +229,17 @@ export default function App() {
   //       timeSlot: bookingForm.timeSlot,
   //     };
   //     const res = await axios.post(`${BASE_URL}/bookings`, payload);
+<<<<<<< HEAD
   // 
   //     if (res.data && res.data.error) {
   //       return showAlert("❌ Rezervasyon Hatası", res.data.error);
   //     }
   // 
+=======
+  //     if (res.data && res.data.error) {
+  //       return showAlert("❌ Rezervasyon Hatası", res.data.error);
+  //     }
+>>>>>>> origin/emirhan-fidan
   //     showAlert('✅ Rezervasyon Başarılı', res.data?.message || 'Saha kiralama talebiniz başarıyla alındı.');
   //     setBookingForm({ field: '', date: '', timeSlot: '' });
   //     loadUserData();
@@ -214,7 +250,11 @@ export default function App() {
   //     setGlobalLoading(false);
   //   }
   // };
+
   // 
+
+  // HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI
+ origin/emirhan-fidan
   // const handleCancelBooking = async (bookingId) => {
   //   try {
   //     const res = await axios.delete(`${BASE_URL}/bookings/${bookingId}`);
@@ -224,7 +264,12 @@ export default function App() {
   //     showAlert("❌ İptal Hatası", getErrorMessage(err));
   //   }
   // };
+<<<<<<< HEAD
   // 
+=======
+
+  // HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI
+>>>>>>> origin/emirhan-fidan
   // const handleProfileUpdate = async () => {
   //   if (!profileForm.firstName || !profileForm.lastName) {
   //     return showAlert("⚠️ Uyarı", "Ad ve Soyad alanları boş bırakılamaz.");
@@ -237,7 +282,12 @@ export default function App() {
   //     showAlert("❌ Hata", getErrorMessage(err));
   //   }
   // };
+<<<<<<< HEAD
   // 
+=======
+
+  // HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI
+>>>>>>> origin/emirhan-fidan
   // const handlePasswordChange = async () => {
   //   if (!passwordForm.oldPassword || !passwordForm.newPassword) {
   //     return showAlert("⚠️ Uyarı", "Lütfen eski ve yeni şifrenizi giriniz.");
@@ -251,6 +301,10 @@ export default function App() {
   //   }
   // };
 
+<<<<<<< HEAD
+=======
+  // Destek talebi gönderme Emirhan Fidan'ın sorumluluğundadır (Req 16)
+>>>>>>> origin/emirhan-fidan
   const handleTicketSubmit = async () => {
     if (!ticketForm.subject || !ticketForm.message) {
       return showAlert("⚠️ Uyarı", "Lütfen destek talebi için konu ve mesaj alanlarını doldurunuz.");
@@ -380,8 +434,11 @@ export default function App() {
             <TextInput style={[styles.input, { backgroundColor: '#1e293b', color: 'white', borderColor: '#334155' }]} placeholder="Yönetici E-posta" placeholderTextColor="#64748b" value={adminLoginForm.email} onChangeText={t => setAdminLoginForm({ ...adminLoginForm, email: t })} autoCapitalize="none" keyboardType="email-address" />
             <TextInput style={[styles.input, { backgroundColor: '#1e293b', color: 'white', borderColor: '#334155' }]} placeholder="Şifre" placeholderTextColor="#64748b" secureTextEntry value={adminLoginForm.password} onChangeText={t => setAdminLoginForm({ ...adminLoginForm, password: t })} />
             <TouchableOpacity style={[styles.btnBlue, { backgroundColor: '#ef4444' }]} onPress={handleAdminLogin}><Text style={styles.navBtnText}>Yönetici Girişi Yap</Text></TouchableOpacity>
+<<<<<<< HEAD
             {/* HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI */}
             {/* <Text style={[styles.adminLink, { color: '#ef4444' }]} onPress={() => setView('login')}>← Müşteri Girişine Dön</Text> */}
+=======
+>>>>>>> origin/emirhan-fidan
           </View>
         )}
 
@@ -422,15 +479,21 @@ export default function App() {
             {userActiveTab === 'new-booking' && (
               <View style={[styles.tabContentArea, { zIndex: 10 }]}>
                 <Text style={styles.sectionTitle}>Yeni Rezervasyon Talebi</Text>
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/emirhan-fidan
                 <Text style={styles.label}>1. Saha Seçimi</Text>
                 {adminFields.map(f => (
                   <TouchableOpacity key={f._id} style={[styles.selectorItem, bookingForm.field === f._id && styles.selectedItemStyle]} onPress={() => setBookingForm({ ...bookingForm, field: f._id })}>
                     <Text style={{ fontWeight: 'bold', color: bookingForm.field === f._id ? '#1d4ed8' : '#334155' }}>⚽ {f.name} (₺{f.pricePerHour}/Saat)</Text>
                   </TouchableOpacity>
                 ))}
+<<<<<<< HEAD
 
                 {/* 📅 TAKVİM BÖLÜMÜ */}
+=======
+>>>>>>> origin/emirhan-fidan
                 <Text style={styles.label}>2. Tarih Seçimi (Takvim)</Text>
                 {Platform.OS === 'web' ? (
                   <input
@@ -443,6 +506,7 @@ export default function App() {
                 ) : (
                   <>
                     <TouchableOpacity style={styles.dropdownHeader} onPress={() => setShowDatePicker(true)}>
+<<<<<<< HEAD
                       <Text style={{ color: bookingForm.date ? '#1e293b' : '#94a3b8', fontSize 15 }}>{bookingForm.date || 'Takvimden tarih seçiniz...'}</Text>
                       <Text>📅</Text>
                     </TouchableOpacity>
@@ -460,12 +524,20 @@ export default function App() {
                 )}
 
                 {/* ⏰ SAAT DROPDOWN BÖLÜMÜ (TAM GÜN) */}
+=======
+                      <Text style={{ color: bookingForm.date ? '#1e293b' : '#94a3b8', fontSize: 15 }}>{bookingForm.date || 'Takvimden tarih seçiniz...'}</Text>
+                      <Text>📅</Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+>>>>>>> origin/emirhan-fidan
                 <Text style={styles.label}>3. Saat Aralığı</Text>
                 <View style={{ zIndex: 100, marginBottom: 20 }}>
                   <TouchableOpacity style={styles.dropdownHeader} activeOpacity={0.8} onPress={() => setShowTimeDropdown(!showTimeDropdown)}>
                     <Text style={{ color: bookingForm.timeSlot ? '#1e293b' : '#94a3b8', fontSize: 15 }}>{bookingForm.timeSlot || 'Lütfen saat seçiniz...'}</Text>
                     <Text style={{ color: '#94a3b8', fontSize: 12 }}>{showTimeDropdown ? '▲' : '▼'}</Text>
                   </TouchableOpacity>
+<<<<<<< HEAD
 
                   {showTimeDropdown && (
                     <View style={styles.dropdownList}>
@@ -492,6 +564,9 @@ export default function App() {
                   )}
                 </View>
 
+=======
+                </View>
+>>>>>>> origin/emirhan-fidan
                 <TouchableOpacity style={styles.btnBlue} onPress={handleCreateBooking}><Text style={styles.navBtnText}>Rezervasyon Yap</Text></TouchableOpacity>
               </View>
             )}
@@ -527,6 +602,10 @@ export default function App() {
         )}
         */}
 
+<<<<<<< HEAD
+=======
+        {/* ----------------- ADMİN KONTROL PANELİ EKRANLARI ----------------- */}
+>>>>>>> origin/emirhan-fidan
         {view === 'admin' && (
           <View style={styles.panelCard}>
             <Text style={[styles.welcomeTitle, { color: '#ef4444' }]}>🛡️ Operasyon Merkezi</Text>
@@ -616,6 +695,31 @@ export default function App() {
           <Text style={[styles.tabBarIcon, view === 'home' && styles.activeIcon]}>🏠</Text>
           <Text style={[styles.tabBarLabel, view === 'home' && styles.activeLabel]}>Ana Sayfa</Text>
         </TouchableOpacity>
+<<<<<<< HEAD
+=======
+        
+        {/* HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI */}
+        {/*
+        {!session ? (
+          <TouchableOpacity style={styles.tabBarItem} onPress={() => setView('login')}>
+            <Text style={[styles.tabBarIcon, (view === 'login' || view === 'register') && styles.activeIcon]}>🔑</Text>
+            <Text style={[styles.tabBarLabel, (view === 'login' || view === 'register') && styles.activeLabel]}>Giriş Yap</Text>
+          </TouchableOpacity>
+        ) : (
+          <>
+            <TouchableOpacity style={styles.tabBarItem} onPress={() => setView(session.role === 'admin' ? 'admin' : 'profile')}>
+              <Text style={[styles.tabBarIcon, (view === 'profile' || view === 'admin') && styles.activeIcon]}>📊</Text>
+              <Text style={[styles.tabBarLabel, (view === 'profile' || view === 'admin') && styles.activeLabel]}>Panelim</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.tabBarItem} onPress={() => { setSession(null); setView('home'); }}>
+              <Text style={[styles.tabBarIcon, { color: '#ef4444' }]}>🚪</Text>
+              <Text style={[styles.tabBarLabel, { color: '#ef4444' }]}>Çıkış Yap</Text>
+            </TouchableOpacity>
+          </>
+        )}
+        */}
+
+>>>>>>> origin/emirhan-fidan
         {/* Ekip İzolasyonu için sadece Yöneticiye özel alt navigasyon aktif bırakılmıştır */}
         {!session ? (
           <TouchableOpacity style={styles.tabBarItem} onPress={() => setView('admin-login')}>
