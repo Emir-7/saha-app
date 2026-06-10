@@ -53,63 +53,25 @@ const getReports = async (req, res) => {
     }
 };
 
-// 16 - Admin girişi (Güncellendi)
+// 16 - Admin girişi
 const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const debugInfo = {
-            incomingEmail: email,
-            emailLength: email?.length
-        };
-
-        // DEBUG: Tüm admin users'ları listele
-        const allAdmins = await User.find({ role: 'admin' }).select('email role -_id');
-        debugInfo.allAdminsInDB = allAdmins.map(admin => ({
-            email: admin.email,
-            role: admin.role
-        }));
-
-        // DEBUG: Sadece email ile arama yap
-        const userByEmail = await User.findOne({ email }).select('email role');
-        debugInfo.userFoundByEmail = userByEmail ? {
-            email: userByEmail.email,
-            role: userByEmail.role
-        } : null;
-
-        // Şimdi email + role ile arama yap
         const adminUser = await User.findOne({ email, role: 'admin' });
-        debugInfo.adminUserFound = adminUser ? 'YES' : 'NO';
-        
         if (!adminUser) {
-            debugInfo.errorMessage = 'Admin hesabı bulunamadı!';
-            return res.status(404).json({ 
-                error: 'Admin hesabı bulunamadı.',
-                debug: debugInfo
-            });
+            return res.status(404).json({ error: 'Admin hesabı bulunamadı.' });
         }
 
         // Bcrypt ile hash kontrolü
         const isMatch = await bcrypt.compare(password, adminUser.password);
         if (!isMatch) {
-            debugInfo.passwordMatch = false;
-            return res.status(401).json({ 
-                error: 'Hatalı şifre girdiniz.',
-                debug: debugInfo
-            });
+            return res.status(401).json({ error: 'Hatalı şifre girdiniz.' });
         }
 
-        debugInfo.passwordMatch = true;
-        res.status(200).json({ 
-            message: 'Admin girişi başarılı', 
-            adminId: adminUser._id,
-            debug: debugInfo
-        });
+        res.status(200).json({ message: 'Admin girişi başarılı', adminId: adminUser._id });
     } catch (error) {
-        return res.status(500).json({ 
-            error: 'Admin girişi sırasında sistemde hata oluştu.', 
-            details: error.message 
-        });
+        res.status(500).json({ error: 'Admin girişi sırasında sistemde hata oluştu.', details: error.message });
     }
 };
 
