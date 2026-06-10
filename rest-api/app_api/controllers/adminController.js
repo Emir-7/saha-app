@@ -4,7 +4,7 @@ const Booking = mongoose.model('Booking');
 const User = mongoose.model('User');
 const Field = mongoose.model('Field');
 const Ticket = mongoose.model('Ticket');
-const bcrypt = require('bcryptjs');
+const logger = require('../utils/logger');
 
 // 14 - Saha müsaitlik sorgulama
 const checkAvailability = async (req, res) => {
@@ -59,41 +59,48 @@ const adminLogin = async (req, res) => {
         const { email, password } = req.body;
 
         // DEBUG: Gelen email değerini ve uzunluğunu yazdır
-        console.log('🔍 DEBUG - Gelen email:', JSON.stringify(email));
-        console.log('🔍 DEBUG - Email uzunluğu:', email.length);
-        console.log('🔍 DEBUG - Email karakter kodu:', email.split('').map(c => c.charCodeAt(0)));
+        logger.info('ADMIN_LOGIN_DEBUG', 'Gelen email:', { email, length: email.length, charCodes: email.split('').map(c => c.charCodeAt(0)) });
+        console.error('🔍 DEBUG - Gelen email:', JSON.stringify(email));
+        console.error('🔍 DEBUG - Email uzunluğu:', email.length);
 
         // DEBUG: Sadece email ile arama yap (role filtresi olmadan)
         const userByEmail = await User.findOne({ email });
-        console.log('📧 DEBUG - Sadece email ile bulunan kullanıcı:', userByEmail);
+        logger.info('ADMIN_LOGIN_DEBUG', 'Sadece email ile bulunan kullanıcı:', { userByEmail });
+        console.error('📧 DEBUG - Sadece email ile bulunan kullanıcı:', userByEmail);
+        
         if (userByEmail) {
-            console.log('📧 DEBUG - Kullanıcının role alanı:', JSON.stringify(userByEmail.role));
-            console.log('📧 DEBUG - Role uzunluğu:', userByEmail.role.length);
-            console.log('📧 DEBUG - Role karakter kodu:', userByEmail.role.split('').map(c => c.charCodeAt(0)));
+            logger.info('ADMIN_LOGIN_DEBUG', 'Kullanıcının role alanı:', { role: userByEmail.role, length: userByEmail.role.length });
+            console.error('📧 DEBUG - Kullanıcının role alanı:', JSON.stringify(userByEmail.role), 'Uzunluk:', userByEmail.role.length);
         }
 
         // Şimdi email + role ile arama yap
         const adminUser = await User.findOne({ email, role: 'admin' });
-        console.log('👤 DEBUG - Email + role:admin ile bulunan kullanıcı:', adminUser);
+        logger.info('ADMIN_LOGIN_DEBUG', 'Email + role:admin ile arama sonucu:', { adminUser: adminUser ? 'BULUNDU' : 'BULUNAMADI' });
+        console.error('👤 DEBUG - Email + role:admin ile bulunan kullanıcı:', adminUser ? 'BULUNDU' : 'BULUNAMADI');
         
         if (!adminUser) {
-            console.log('❌ DEBUG - Admin hesabı bulunamadı!');
+            logger.warn('ADMIN_LOGIN_DEBUG', 'Admin hesabı bulunamadı!', { email });
+            console.error('❌ DEBUG - Admin hesabı bulunamadı!');
             return res.status(404).json({ error: 'Admin hesabı bulunamadı.' });
         }
 
-        console.log('✅ DEBUG - Admin bulundu, şifre kontrolü yapılıyor...');
+        logger.info('ADMIN_LOGIN_DEBUG', 'Admin bulundu, şifre kontrolü yapılıyor...');
+        console.error('✅ DEBUG - Admin bulundu, şifre kontrolü yapılıyor...');
 
         // Bcrypt ile hash kontrolü
         const isMatch = await bcrypt.compare(password, adminUser.password);
         if (!isMatch) {
-            console.log('❌ DEBUG - Şifre eşleşmedi!');
+            logger.warn('ADMIN_LOGIN_DEBUG', 'Şifre eşleşmedi!');
+            console.error('❌ DEBUG - Şifre eşleşmedi!');
             return res.status(401).json({ error: 'Hatalı şifre girdiniz.' });
         }
 
-        console.log('✅ DEBUG - Şifre eşleşti, giriş başarılı!');
+        logger.info('ADMIN_LOGIN_DEBUG', 'Şifre eşleşti, giriş başarılı!');
+        console.error('✅ DEBUG - Şifre eşleşti, giriş başarılı!');
         res.status(200).json({ message: 'Admin girişi başarılı', adminId: adminUser._id });
     } catch (error) {
-        console.log('❌ DEBUG - Hata oluştu:', error.message);
+        logger.error('ADMIN_LOGIN_DEBUG', 'Hata oluştu:', error.message);
+        console.error('❌ DEBUG - Hata oluştu:', error.message);
         res.status(500).json({ error: 'Admin girişi sırasında sistemde hata oluştu.', details: error.message });
     }
 };
