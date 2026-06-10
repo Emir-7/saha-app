@@ -22,15 +22,12 @@ services:
     container_name: redis_kapsayici
     ports:
       - "6379:6379"
-<<<<<<< Updated upstream
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 15s
       timeout: 5s
       retries: 3
       start_period: 10s
-=======
->>>>>>> Stashed changes
 
   # RabbitMQ Servisi
   rabbitmq_kapsayici:
@@ -39,15 +36,12 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-<<<<<<< Updated upstream
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 30s
-=======
->>>>>>> Stashed changes
 
   # Backend API Servisi
   sahaapp_api:
@@ -57,16 +51,12 @@ services:
     ports:
       - "9000:9000"
     environment:
-<<<<<<< Updated upstream
       - NODE_ENV=production
-=======
->>>>>>> Stashed changes
       - MONGO_URI=mongodb://mongodb:27017/SahaAppDB
       - PORT=9000
       - REDIS_URL=redis://redis_kapsayici:6379
       - RABBITMQ_URL=amqp://rabbitmq_kapsayici
     depends_on:
-<<<<<<< Updated upstream
       mongodb:
         condition: service_healthy
       redis_kapsayici:
@@ -79,11 +69,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
-=======
-      - mongodb
-      - redis_kapsayici
-      - rabbitmq_kapsayici
->>>>>>> Stashed changes
 
   # Frontend Web Servisi (Geçici Olarak Devre Dışı Bırakıldı)
   # sahaapp_web:

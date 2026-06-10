@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
-
 import { BASE_URL } from '../config';
-=======
->>>>>>> Stashed changes
 
 export const fetchApi = async (endpoint, options = {}) => {
     try {

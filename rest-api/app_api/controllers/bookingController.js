@@ -9,11 +9,7 @@ const logger = require('../utils/logger');
 const createBooking = async (req, res) => {
 
     try {
-<<<<<<< Updated upstream
         logger.debug('Booking', "Frontend'den Gelen İstek Verisi (req.body):", { body: req.body });
-=======
-        console.log("🚨 [DEBUG] Frontend'den Gelen İstek Verisi (req.body):", req.body);
->>>>>>> Stashed changes
         // 1. ESNEK VERİ YAKALAMA
         const actualField = req.body.fieldId || req.body.field || req.body.sahaId;
         const actualUser  = req.body.userId  || req.body.user  || req.body.kullaniciId;
@@ -68,7 +64,6 @@ const createBooking = async (req, res) => {
                     'booking_queue',
                     Buffer.from(JSON.stringify({ bookingId: newBooking._id, field: actualField, user: actualUser, date, timeSlot }))
                 );
-<<<<<<< Updated upstream
                 logger.info('RabbitMQ', `Mesaj kuyruğuna başarıyla iletildi`, {
                     bookingId: newBooking._id,
                     queue: 'booking_queue',
@@ -76,12 +71,6 @@ const createBooking = async (req, res) => {
             }
         } catch (mqError) {
             logger.error('RabbitMQ', 'Rezervasyon mesajı kuyruğa gönderilemedi', { error: mqError.message });
-=======
-                console.log(`🚀 [TEST-LOG] Mesaj RabbitMQ kuyruğuna başarıyla iletildi: ${newBooking._id}`);
-            }
-        } catch (mqError) {
-            console.error('[MQ] Rezervasyon mesajı kuyruğa gönderilemedi:', mqError.message);
->>>>>>> Stashed changes
         }
 
         // Sunum için: Redis Cache entegrasyonu
@@ -93,7 +82,6 @@ const createBooking = async (req, res) => {
                     JSON.stringify(newBooking),
                     { EX: 3600 }
                 );
-<<<<<<< Updated upstream
                 logger.info('Redis-Cache', 'Yeni rezervasyon önbelleğe alındı.', {
                     bookingId: newBooking._id,
                     ttl: 3600,
@@ -101,21 +89,12 @@ const createBooking = async (req, res) => {
             }
         } catch (redisError) {
             logger.error('Redis-Cache', 'Rezervasyon önbelleğe alınamadı', { error: redisError.message });
-=======
-                console.log("💾 [Redis] Yeni rezervasyon önbelleğe alındı.");
-            }
-        } catch (redisError) {
-            console.error('[Redis] Rezervasyon önbelleğe alınamadı:', redisError.message);
->>>>>>> Stashed changes
         }
 
         // 3. KESİN BAŞARI MESAJI
         res.status(201).json({ message: 'saha kiralama işlemi başarıyla tamamlandı', booking: newBooking });
     } catch (error) {
-<<<<<<< Updated upstream
         logger.error('Booking', 'Rezervasyon oluşturulurken kritik hata', { error: error.message });
-=======
->>>>>>> Stashed changes
         return res.status(500).json({ 
             success: false, 
             message: "Backend'de kritik bir hata oluştu", 

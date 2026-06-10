@@ -6,14 +6,10 @@ const cors = require('cors');
 const { createClient } = require('redis');
 const amqp = require('amqplib');
 
-<<<<<<< Updated upstream
 // 📊 MODERNIZATION: Yapılandırılmış Logger & Middleware
 const logger = require('./app_api/utils/logger');
 const observabilityMiddleware = require('./app_api/middlewares/observability');
 const { runHealthCheck, startHealthCheckLoop } = require('./app_api/utils/healthCheck');
-
-=======
->>>>>>> Stashed changes
 // Veritabanı bağlantısı ve Mongoose modellerini projeye dahil et
 require('./app_api/models/db');
 
@@ -51,7 +47,6 @@ app.use(cors({
 }));
 
 // ==========================================
-<<<<<<< Updated upstream
 // 🏥 HEALTH CHECK ENDPOINT
 // Servislerin canlı durumunu döndüren REST endpoint.
 // ==========================================
@@ -60,52 +55,6 @@ app.get('/api/health', async (req, res) => {
   const statusCode = report.overallStatus === 'HEALTHY' ? 200 : 503;
   res.status(statusCode).json(report);
 });
-=======
-// 🛡️ 5. MADDE: ADVANCED TECHNOLOGIES BAĞLANTI KATMANLARI
-// ==========================================
-
-// 🟥 1. REDIS BAĞLANTI AYARI (Sistem Çökmesini Önleyen Catch Yapılı)
-const redisClient = createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379'
-});
-
-redisClient.connect()
-  .then(() => console.log('🚀 Redis Hafıza Katmanı Başarıyla Bağlandı.'))
-  .catch(err => console.log('⚠️ Redis Bağlantı Hatası (Sistem MongoDB ile devam ediyor):', err.message));
-
-// İsteklerin route dosyalarında kullanılabilmesi için redisClient'ı express'e bağlıyoruz
-app.set('redisClient', redisClient);
-
-// 🟨 2. RABBITMQ BAĞLANTI VE KUYRUK OLUŞTURMA AYARI (Lokal Koruma Güvenlik Protokolü)
-async function initRabbitMQ() {
-  try {
-    const connection = await amqp.connect(process.env.RABBITMQ_URL || 'amqp://localhost');
-    const channel = await connection.createChannel();
-    const queue = 'booking_queue';
-
-    // Kuyruğu hafızada garantile (Durable: True)
-    await channel.assertQueue(queue, { durable: true });
-    console.log(`🚀 RabbitMQ '${queue}' Mesaj Kuyruğu Başarıyla Tetiklendi.`);
-    
-    // Controller dosyalarında erişebilmek için express nesnesine gömüyoruz
-    app.set('mqChannel', channel);
-  } catch (err) {
-    console.log('⚠️ RabbitMQ Lokal Modda: Gerçek kuyruk sunucusu bulunamadı. Sistem simüle moduna alınıyor.');
-    
-    // 🛡️ LOKAL KORUMA: Bilgisayarda RabbitMQ yoksa uygulamanın kilitlenmesini önlemek için sahte (mock) bir obje bağlıyoruz
-    app.set('mqChannel', {
-      sendToQueue: (q, msg) => console.log(`[Simüle Kuyruk] ${q} adresine mesaj gönderildi:`, msg.toString()),
-      assertQueue: () => Promise.resolve()
-    });
-  }
-}
-initRabbitMQ();
-
-// ==========================================
-
-// Yönlendirme (Router) kullanımı
-app.use('/api', routesApi);
->>>>>>> Stashed changes
 
 // ==========================================
 // 🛡️ 5. MADDE: ADVANCED TECHNOLOGIES BAĞLANTI KATMANLARI
