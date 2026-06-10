@@ -8,23 +8,21 @@ const express = require('express');
 const router = express.Router();
 
 // Controller dosyalarını içeri dahil et
-// HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI
-// const ctrlAuth = require('../controllers/authController');
+const ctrlAuth = require('../controllers/authController');
 const ctrlBooking = require('../controllers/bookingController');
 const ctrlSaha = require('../controllers/sahaController');
 const ctrlAdmin = require('../controllers/adminController');
 
 // --- HİLMİ SİNAN KAPLAN (1-8) ---
 // Not: Aşağıdaki rotalar Hilmi Sinan Kaplan sorumluluğundadır.
-// HİLMİ SİNAN KAPLAN KODU - GEÇİCİ OLARAK YORUMA ALINDI
-// router.post('/auth/register', ctrlAuth.register);                        // 1. Üye Olma
-// router.post('/auth/login', ctrlAuth.login);                              // 2. Giriş Yapma
-// router.get('/users/:userId', ctrlAuth.getProfile);                       // 3. Profil Görüntüleme
-// router.put('/users/:userId', ctrlAuth.updateProfile);                    // 4. Profil Güncelleme
-// router.patch('/users/:userId/password', ctrlAuth.changePassword);        // 5. Şifre Değiştirme
-// router.post('/bookings', ctrlBooking.createBooking);                     // 6. Rezervasyon Oluşturma
-// router.delete('/bookings/:bookingId', ctrlBooking.cancelBooking);        // 7. Rezervasyon İptal
-// router.get('/users/:userId/bookings', ctrlBooking.listUserBookings);     // 8. Kişisel Maç Geçmişi
+router.post('/auth/register', ctrlAuth.register);                        // 1. Üye Olma
+router.post('/auth/login', ctrlAuth.login);                              // 2. Giriş Yapma
+router.get('/users/:userId', ctrlAuth.getProfile);                       // 3. Profil Görüntüleme
+router.put('/users/:userId', ctrlAuth.updateProfile);                    // 4. Profil Güncelleme
+router.patch('/users/:userId/password', ctrlAuth.changePassword);        // 5. Şifre Değiştirme
+router.post('/bookings', ctrlBooking.createBooking);                     // 6. Rezervasyon Oluşturma
+router.delete('/bookings/:bookingId', ctrlBooking.cancelBooking);        // 7. Rezervasyon İptal
+router.get('/users/:userId/bookings', ctrlBooking.listUserBookings);     // 8. Kişisel Maç Geçmişi
 
 // --- EMİRHAN FİDAN (9-17) ---
 // Not: Aşağıdaki rotalar Emirhan Fidan sorumluluğundadır.
