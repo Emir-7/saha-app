@@ -58,48 +58,45 @@ const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // DEBUG: Gelen email değerini ve uzunluğunu yazdır
-        logger.info('ADMIN_LOGIN_DEBUG', 'Gelen email:', { email, length: email.length, charCodes: email.split('').map(c => c.charCodeAt(0)) });
-        console.error('🔍 DEBUG - Gelen email:', JSON.stringify(email));
-        console.error('🔍 DEBUG - Email uzunluğu:', email.length);
+        // DEBUG: Gelen email değerini yazdır
+        console.error('🔍 DEBUG - Gelen email:', email, '| Uzunluk:', email?.length);
+
+        // DEBUG: Tüm admin users'ları listele
+        const allAdmins = await User.find({ role: 'admin' }).select('email role');
+        console.error('👥 DEBUG - Veritabanında bulunan TÜM admin kullanıcılar:');
+        allAdmins.forEach(admin => {
+            console.error(`   - Email: "${admin.email}" | Role: "${admin.role}"`);
+        });
 
         // DEBUG: Sadece email ile arama yap (role filtresi olmadan)
         const userByEmail = await User.findOne({ email });
-        logger.info('ADMIN_LOGIN_DEBUG', 'Sadece email ile bulunan kullanıcı:', { userByEmail });
-        console.error('📧 DEBUG - Sadece email ile bulunan kullanıcı:', userByEmail);
+        console.error('📧 DEBUG - Email ile bulunan kullanıcı:', userByEmail ? `Bulundu - Role: ${userByEmail.role}` : 'BULUNAMADI');
         
-        if (userByEmail) {
-            logger.info('ADMIN_LOGIN_DEBUG', 'Kullanıcının role alanı:', { role: userByEmail.role, length: userByEmail.role.length });
-            console.error('📧 DEBUG - Kullanıcının role alanı:', JSON.stringify(userByEmail.role), 'Uzunluk:', userByEmail.role.length);
+        if (!userByEmail) {
+            console.error('⚠️  DEBUG - Email ile kullanıcı bulunamadı. Veritabanında bu email var mı kontrol et!');
         }
 
         // Şimdi email + role ile arama yap
         const adminUser = await User.findOne({ email, role: 'admin' });
-        logger.info('ADMIN_LOGIN_DEBUG', 'Email + role:admin ile arama sonucu:', { adminUser: adminUser ? 'BULUNDU' : 'BULUNAMADI' });
-        console.error('👤 DEBUG - Email + role:admin ile bulunan kullanıcı:', adminUser ? 'BULUNDU' : 'BULUNAMADI');
+        console.error('👤 DEBUG - Email + role:admin ile arama sonucu:', adminUser ? 'BULUNDU' : 'BULUNAMADI');
         
         if (!adminUser) {
-            logger.warn('ADMIN_LOGIN_DEBUG', 'Admin hesabı bulunamadı!', { email });
-            console.error('❌ DEBUG - Admin hesabı bulunamadı!');
+            console.error('❌ DEBUG - Admin hesabı bulunamadı! İletilen email:', email);
             return res.status(404).json({ error: 'Admin hesabı bulunamadı.' });
         }
 
-        logger.info('ADMIN_LOGIN_DEBUG', 'Admin bulundu, şifre kontrolü yapılıyor...');
         console.error('✅ DEBUG - Admin bulundu, şifre kontrolü yapılıyor...');
 
         // Bcrypt ile hash kontrolü
         const isMatch = await bcrypt.compare(password, adminUser.password);
         if (!isMatch) {
-            logger.warn('ADMIN_LOGIN_DEBUG', 'Şifre eşleşmedi!');
             console.error('❌ DEBUG - Şifre eşleşmedi!');
             return res.status(401).json({ error: 'Hatalı şifre girdiniz.' });
         }
 
-        logger.info('ADMIN_LOGIN_DEBUG', 'Şifre eşleşti, giriş başarılı!');
         console.error('✅ DEBUG - Şifre eşleşti, giriş başarılı!');
         res.status(200).json({ message: 'Admin girişi başarılı', adminId: adminUser._id });
     } catch (error) {
-        logger.error('ADMIN_LOGIN_DEBUG', 'Hata oluştu:', error.message);
         console.error('❌ DEBUG - Hata oluştu:', error.message);
         res.status(500).json({ error: 'Admin girişi sırasında sistemde hata oluştu.', details: error.message });
     }
