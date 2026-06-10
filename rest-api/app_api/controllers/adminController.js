@@ -4,6 +4,7 @@ const Booking = mongoose.model('Booking');
 const User = mongoose.model('User');
 const Field = mongoose.model('Field');
 const Ticket = mongoose.model('Ticket');
+const bcrypt = require('bcryptjs');
 
 // 14 - Saha müsaitlik sorgulama
 const checkAvailability = async (req, res) => {
@@ -52,7 +53,7 @@ const getReports = async (req, res) => {
     }
 };
 
-// 16 - Admin girişi
+// 16 - Admin girişi (Güncellendi)
 const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -62,7 +63,7 @@ const adminLogin = async (req, res) => {
             return res.status(404).json({ error: 'Admin hesabı bulunamadı.' });
         }
 
-        // Emirhan Fidan: Bcrypt güvenlik entegrasyonu sağlandı
+        // Bcrypt ile hash kontrolü
         const isMatch = await bcrypt.compare(password, adminUser.password);
         if (!isMatch) {
             return res.status(401).json({ error: 'Hatalı şifre girdiniz.' });
@@ -74,7 +75,7 @@ const adminLogin = async (req, res) => {
     }
 };
 
-// 17 - Admin şifre değiştirme
+// 17 - Admin şifre değiştirme (Güncellendi)
 const adminChangePassword = async (req, res) => {
     try {
         const { adminId } = req.params;
@@ -85,15 +86,15 @@ const adminChangePassword = async (req, res) => {
             return res.status(404).json({ error: 'Admin hesabı bulunamadı.' });
         }
 
+        // Mevcut şifreyi bcrypt ile doğrula
         const isMatch = await bcrypt.compare(oldPassword, adminUser.password);
         if (!isMatch) {
             return res.status(401).json({ error: 'Mevcut şifreniz yanlış.' });
         }
 
-        // Emirhan Fidan: Yeni şifreyi kriptolayarak kaydet
+        // Yeni şifreyi hashle[cite: 5]
         const salt = await bcrypt.genSalt(10);
         adminUser.password = await bcrypt.hash(newPassword, salt);
-        
         await adminUser.save();
 
         res.status(200).json({ message: 'Admin şifresi başarıyla güncellendi.' });
