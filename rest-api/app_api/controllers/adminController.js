@@ -58,8 +58,24 @@ const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const adminUser = await User.findOne({ email, role: 'admin' });
+        // --- DEBUG: Önce kullanıcıyı email ile bul, role değerini kontrol et ---
+        const debugUser = await User.findOne({ email });
+        if (debugUser) {
+            logger.info(`🔍 Kullanıcı bulundu: ${email}`);
+            logger.info(`📧 DB'deki role değeri: "${debugUser.role}" | Uzunluk: ${debugUser.role ? debugUser.role.length : 'N/A'} | Char codes: ${debugUser.role ? [...debugUser.role].map(c => c.charCodeAt(0)).join(',') : 'N/A'}`);
+        } else {
+            logger.warn(`⚠️  Email ile kullanıcı bulunamadı: ${email}`);
+        }
+        // --- DEBUG SONU ---
+
+        // Case-insensitive regex ile role kontrolü (Admin, ADMIN, admin, " admin" hepsini yakalar)
+        const adminUser = await User.findOne({
+            email,
+            role: { $regex: /^admin$/i }
+        });
+
         if (!adminUser) {
+            logger.warn(`🚫 Admin rolü eşleşmedi. Email: ${email} | DB role: "${debugUser ? debugUser.role : 'kullanıcı yok'}"`);
             return res.status(404).json({ error: 'Admin hesabı bulunamadı.' });
         }
 
@@ -69,8 +85,10 @@ const adminLogin = async (req, res) => {
             return res.status(401).json({ error: 'Hatalı şifre girdiniz.' });
         }
 
+        logger.info(`✅ Admin girişi başarılı: ${email}`);
         res.status(200).json({ message: 'Admin girişi başarılı', adminId: adminUser._id });
     } catch (error) {
+        logger.error(`❌ Admin girişi hatası: ${error.message}`);
         res.status(500).json({ error: 'Admin girişi sırasında sistemde hata oluştu.', details: error.message });
     }
 };
@@ -81,7 +99,11 @@ const adminChangePassword = async (req, res) => {
         const { adminId } = req.params;
         const { oldPassword, newPassword } = req.body;
 
-        const adminUser = await User.findOne({ _id: adminId, role: 'admin' });
+        // Case-insensitive role kontrolü
+        const adminUser = await User.findOne({
+            _id: adminId,
+            role: { $regex: /^admin$/i }
+        });
         if (!adminUser) {
             return res.status(404).json({ error: 'Admin hesabı bulunamadı.' });
         }
@@ -92,7 +114,7 @@ const adminChangePassword = async (req, res) => {
             return res.status(401).json({ error: 'Mevcut şifreniz yanlış.' });
         }
 
-        // Yeni şifreyi hashle[cite: 5]
+        // Yeni şifreyi hashle
         const salt = await bcrypt.genSalt(10);
         adminUser.password = await bcrypt.hash(newPassword, salt);
         await adminUser.save();
@@ -170,8 +192,9 @@ const updateAdminProfile = async (req, res) => {
             updateData.password = await bcrypt.hash(password, salt);
         }
 
+        // Case-insensitive role kontrolü
         const updatedAdmin = await User.findOneAndUpdate(
-            { _id: adminId, role: 'admin' },
+            { _id: adminId, role: { $regex: /^admin$/i } },
             updateData,
             { new: true, runValidators: true }
         ).select('-password');
