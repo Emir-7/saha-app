@@ -41,3 +41,4 @@ router.post('/admin/login', ctrlAdmin.adminLogin);                        // 17.
 router.put('/admin/profile/:adminId', ctrlAdmin.updateAdminProfile);      // 17. Admin profil güncelleme
 
 module.exports = router;
+

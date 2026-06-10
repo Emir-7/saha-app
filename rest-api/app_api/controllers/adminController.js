@@ -105,10 +105,21 @@ const adminChangePassword = async (req, res) => {
 // 16 - Destek talebi
 const createTicket = async (req, res) => {
     try {
-        const { user, subject, message } = req.body;
+        const { user, userId, kullaniciId, subject, message } = req.body;
+        
+        // Frontend'den user, userId veya kullaniciId gelme ihtimaline karşı:
+        const targetUserId = user || userId || kullaniciId;
+
+        if (!targetUserId) {
+            return res.status(400).json({ error: 'Kullanıcı ID (userId veya user) değeri eksik.' });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
+            return res.status(400).json({ error: 'Geçersiz kullanıcı ID formatı.' });
+        }
         
         const newTicket = await Ticket.create({
-            user,
+            user: targetUserId,
             subject,
             message
         });

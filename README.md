@@ -17,8 +17,8 @@ Akıllı Halı Saha Rezervasyon ve İşletme Sistemi
 
 ## Proje Linkleri
 
-- **REST API Adresi:** [api.sahaapp.com](https://api.sahaapp.com)
-- **Web Frontend Adresi:** [sahaapp.vercel.app](https://sahaapp.vercel.app)
+- **REST API Adresi:** [api.sahaapp.com](https://saha-app.onrender.com)
+- **Web Frontend Adresi:** [sahaapp.vercel.app](https://saha-app-3iwt.vercel.app)
 
 ---
 

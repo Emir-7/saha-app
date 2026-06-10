@@ -1,14 +1,55 @@
 version: '3.8'
 
 services:
-  mongodb_kapsayici:
+  # MongoDB Servisi (Konteyner içi erişim adı: mongodb)
+  mongodb:
     image: mongo:latest
-    container_name: mongodb_kapsayici
+    container_name: mongodb
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
+  # Redis Servisi
+  redis_kapsayici:
+    image: redis:alpine
+    container_name: redis_kapsayici
+    ports:
+      - "6379:6379"
+<<<<<<< Updated upstream
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+=======
+>>>>>>> Stashed changes
+
+  # RabbitMQ Servisi
+  rabbitmq_kapsayici:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq_kapsayici
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+<<<<<<< Updated upstream
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+=======
+>>>>>>> Stashed changes
+
+  # Backend API Servisi
   sahaapp_api:
     build:
       context: ./rest-api
@@ -16,19 +57,43 @@ services:
     ports:
       - "9000:9000"
     environment:
-      - MONGO_URI=mongodb://mongodb_kapsayici:27017/SahaAppDB
+<<<<<<< Updated upstream
+      - NODE_ENV=production
+=======
+>>>>>>> Stashed changes
+      - MONGO_URI=mongodb://mongodb:27017/SahaAppDB
       - PORT=9000
+      - REDIS_URL=redis://redis_kapsayici:6379
+      - RABBITMQ_URL=amqp://rabbitmq_kapsayici
     depends_on:
-      - mongodb_kapsayici
+<<<<<<< Updated upstream
+      mongodb:
+        condition: service_healthy
+      redis_kapsayici:
+        condition: service_healthy
+      rabbitmq_kapsayici:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"const http = require('http'); http.get('http://localhost:9000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+=======
+      - mongodb
+      - redis_kapsayici
+      - rabbitmq_kapsayici
+>>>>>>> Stashed changes
 
-  sahaapp_web:
-    build:
-      context: ./saha-app-web
-    container_name: sahaapp_web
-    ports:
-      - "3000:80"
-    depends_on:
-      - sahaapp_api
+  # Frontend Web Servisi (Geçici Olarak Devre Dışı Bırakıldı)
+  # sahaapp_web:
+  #   build:
+  #     context: ./saha-app-web
+  #   container_name: sahaapp_web
+  #   ports:
+  #     - "3000:80"
+  #   depends_on:
+  #     - sahaapp_api
 
 volumes:
   mongodb_data:

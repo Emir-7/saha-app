@@ -1,7 +1,7 @@
 
 # Hilmi Sinan Kaplan'ın REST API Metotları
 
-**API Test Videosu:** [Link buraya eklenecek](https://example.com)
+**API Test Videosu:** [https://youtu.be/mFirscZeRek]
 
 ## 1. Üye Olma
 - **Endpoint:** `POST /auth/register`

@@ -1,35 +1,127 @@
 const mongoose = require('mongoose');
 const Booking = mongoose.model('Booking');
 const Field = mongoose.model('Field');
+const logger = require('../utils/logger');
 
-// 6 - Yeni Rezervasyon Talebi Oluşturma
+/**
+ * 🚀 KULLANICI REZERVASYON OLUŞTURMA FONKSİYONU (createBooking)
+ */
 const createBooking = async (req, res) => {
+
     try {
-        const { field, user, date, timeSlot } = req.body;
+<<<<<<< Updated upstream
+        logger.debug('Booking', "Frontend'den Gelen İstek Verisi (req.body):", { body: req.body });
+=======
+        console.log("🚨 [DEBUG] Frontend'den Gelen İstek Verisi (req.body):", req.body);
+>>>>>>> Stashed changes
+        // 1. ESNEK VERİ YAKALAMA
+        const actualField = req.body.fieldId || req.body.field || req.body.sahaId;
+        const actualUser  = req.body.userId  || req.body.user  || req.body.kullaniciId;
+        const date        = req.body.date     || null;
+        const timeSlot    = req.body.timeSlot || null;
+
+        if (!actualField) {
+            return res.status(400).json({ success: false, message: "Eksik veri var! (Saha ID eksik)", reqBody: req.body });
+        }
+        if (!actualUser) {
+            return res.status(400).json({ success: false, message: "Eksik veri var! (Kullanıcı ID eksik)", reqBody: req.body });
+        }
+        if (!date) {
+            return res.status(400).json({ success: false, message: "Eksik veri var! (Tarih - date eksik)", reqBody: req.body });
+        }
+        if (!timeSlot) {
+            return res.status(400).json({ success: false, message: "Eksik veri var! (Saat - timeSlot eksik)", reqBody: req.body });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(actualField)) {
+            return res.status(400).json({ error: 'Geçersiz saha ID formatı.' });
+        }
+        if (!mongoose.Types.ObjectId.isValid(actualUser)) {
+            return res.status(400).json({ error: 'Geçersiz kullanıcı ID formatı.' });
+        }
 
         // Kontrol: Saha var mı?
-        const existingField = await Field.findById(field);
+        const existingField = await Field.findById(actualField);
         if (!existingField) {
             return res.status(404).json({ error: 'Rezervasyon yapılmak istenen saha sistemde bulunamadı.' });
         }
 
         // Kontrol: O sahanın istenen saati başka bir rezervasyonda (İptal edilmemiş haliyle) dolu mu?
-        const isOccupied = await Booking.findOne({ field, date, timeSlot, status: { $ne: 'İptal Edildi' } });
+        const isOccupied = await Booking.findOne({ field: actualField, date, timeSlot, status: { $ne: 'İptal Edildi' } });
         if (isOccupied) {
             return res.status(400).json({ error: 'Bu saha seçilen saat aralığında zaten dolu/rezerve edilmiş.' });
         }
 
         const newBooking = await Booking.create({
-            field,
-            user,
+            field:    actualField,
+            user:     actualUser,
             date,
             timeSlot,
-            status: 'Onay Bekliyor'
+            status:   'Onay Bekliyor'
         });
 
-        res.status(201).json({ message: 'Rezervasyon talebi başarıyla oluşturuldu.', booking: newBooking });
+        // Sunum için: RabbitMQ event producer
+        try {
+            const mqChannel = req.app.get('mqChannel');
+            if (mqChannel) {
+                mqChannel.sendToQueue(
+                    'booking_queue',
+                    Buffer.from(JSON.stringify({ bookingId: newBooking._id, field: actualField, user: actualUser, date, timeSlot }))
+                );
+<<<<<<< Updated upstream
+                logger.info('RabbitMQ', `Mesaj kuyruğuna başarıyla iletildi`, {
+                    bookingId: newBooking._id,
+                    queue: 'booking_queue',
+                });
+            }
+        } catch (mqError) {
+            logger.error('RabbitMQ', 'Rezervasyon mesajı kuyruğa gönderilemedi', { error: mqError.message });
+=======
+                console.log(`🚀 [TEST-LOG] Mesaj RabbitMQ kuyruğuna başarıyla iletildi: ${newBooking._id}`);
+            }
+        } catch (mqError) {
+            console.error('[MQ] Rezervasyon mesajı kuyruğa gönderilemedi:', mqError.message);
+>>>>>>> Stashed changes
+        }
+
+        // Sunum için: Redis Cache entegrasyonu
+        try {
+            const redisClient = req.app.get('redisClient');
+            if (redisClient) {
+                await redisClient.set(
+                    `booking:${newBooking._id}`,
+                    JSON.stringify(newBooking),
+                    { EX: 3600 }
+                );
+<<<<<<< Updated upstream
+                logger.info('Redis-Cache', 'Yeni rezervasyon önbelleğe alındı.', {
+                    bookingId: newBooking._id,
+                    ttl: 3600,
+                });
+            }
+        } catch (redisError) {
+            logger.error('Redis-Cache', 'Rezervasyon önbelleğe alınamadı', { error: redisError.message });
+=======
+                console.log("💾 [Redis] Yeni rezervasyon önbelleğe alındı.");
+            }
+        } catch (redisError) {
+            console.error('[Redis] Rezervasyon önbelleğe alınamadı:', redisError.message);
+>>>>>>> Stashed changes
+        }
+
+        // 3. KESİN BAŞARI MESAJI
+        res.status(201).json({ message: 'saha kiralama işlemi başarıyla tamamlandı', booking: newBooking });
     } catch (error) {
-        res.status(500).json({ error: 'Rezervasyon isteği işlenirken hata oluştu.', details: error.message });
+<<<<<<< Updated upstream
+        logger.error('Booking', 'Rezervasyon oluşturulurken kritik hata', { error: error.message });
+=======
+>>>>>>> Stashed changes
+        return res.status(500).json({ 
+            success: false, 
+            message: "Backend'de kritik bir hata oluştu", 
+            error: error.message,
+            stack: error.stack
+        });
     }
 };
 
@@ -66,24 +158,46 @@ const cancelBooking = async (req, res) => {
 const confirmBooking = async (req, res) => {
     try {
         const { bookingId } = req.params;
-        const { status } = req.body; // 'Onaylandı' veya 'İptal Edildi'
+        let { status, isConfirmed } = req.body;
+
+        // Frontend'den isConfirmed boolean/string gelirse onu status formatına çevir
+        if (isConfirmed !== undefined) {
+            // "true" veya true ise Onaylandı, aksi halde (false/"false") İptal Edildi
+            status = (isConfirmed === true || isConfirmed === 'true') ? 'Onaylandı' : 'İptal Edildi';
+        }
+
+        // Büyük/küçük harf toleransı
+        if (typeof status === 'string') {
+            const lowerStatus = status.toLowerCase().trim();
+            if (lowerStatus === 'onaylandı' || lowerStatus === 'onaylandi') status = 'Onaylandı';
+            else if (lowerStatus === 'iptal edİldİ' || lowerStatus === 'iptal edildi') status = 'İptal Edildi';
+            else if (lowerStatus === 'onay bekliyor') status = 'Onay Bekliyor';
+        }
 
         const validStatuses = ['Onay Bekliyor', 'Onaylandı', 'İptal Edildi'];
         if (!validStatuses.includes(status)) {
-            return res.status(400).json({ error: 'Geçersiz rezervasyon durumu.' });
+            return res.status(400).json({ error: 'Geçersiz rezervasyon durumu (status).' });
         }
 
-        const updatedBooking = await Booking.findByIdAndUpdate(
-            bookingId,
-            { status: status },
-            { new: true, runValidators: true }
-        );
-
-        if (!updatedBooking) {
+        // 1. Önce rezervasyonu bul (durumunu kontrol etmek için)
+        const existingBooking = await Booking.findById(bookingId);
+        
+        if (!existingBooking) {
             return res.status(404).json({ error: 'Güncellenecek rezervasyon bulunamadı.' });
         }
 
-        res.status(200).json({ message: 'Rezervasyon durumu güncellendi.', booking: updatedBooking });
+        // 2. Eğer zaten onaylanmış veya iptal edilmişse müdahale etmeye izin verme
+        if (existingBooking.status !== 'Onay Bekliyor') {
+            return res.status(400).json({ 
+                error: `İşlem başarısız. Bu rezervasyon zaten '${existingBooking.status}' durumunda.` 
+            });
+        }
+
+        // 3. Durumu güncelle ve kaydet
+        existingBooking.status = status;
+        const updatedBooking = await existingBooking.save();
+
+        res.status(200).json({ message: 'Rezervasyon durumu başarıyla güncellendi.', booking: updatedBooking });
     } catch (error) {
         res.status(500).json({ error: 'Rezervasyon onaylanırken hata oluştu.', details: error.message });
     }

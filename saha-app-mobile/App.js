@@ -146,7 +146,7 @@ export default function App() {
       setView('admin');
       showAlert("✅ Başarılı", "Yönetici paneline geçiş yapıldı.");
     } catch (err) {
-      showAlert("❌ Yönetici Girişi Başarşiız", getErrorMessage(err));
+      showAlert("❌ Yönetici Girişi Başarısız", getErrorMessage(err));
     } finally {
       setGlobalLoading(false);
     }
@@ -363,6 +363,7 @@ export default function App() {
             <TextInput style={[styles.input, { backgroundColor: '#1e293b', color: 'white', borderColor: '#334155' }]} placeholder="Yönetici E-posta" placeholderTextColor="#64748b" value={adminLoginForm.email} onChangeText={t => setAdminLoginForm({ ...adminLoginForm, email: t })} autoCapitalize="none" keyboardType="email-address" />
             <TextInput style={[styles.input, { backgroundColor: '#1e293b', color: 'white', borderColor: '#334155' }]} placeholder="Şifre" placeholderTextColor="#64748b" secureTextEntry value={adminLoginForm.password} onChangeText={t => setAdminLoginForm({ ...adminLoginForm, password: t })} />
             <TouchableOpacity style={[styles.btnBlue, { backgroundColor: '#ef4444' }]} onPress={handleAdminLogin}><Text style={styles.navBtnText}>Yönetici Girişi Yap</Text></TouchableOpacity>
+            <Text style={[styles.adminLink, { color: '#ef4444' }]} onPress={() => setView('login')}>← Müşteri Girişine Dön</Text>
           </View>
         )}
 
@@ -407,6 +408,8 @@ export default function App() {
                     <Text style={{ fontWeight: 'bold', color: bookingForm.field === f._id ? '#1d4ed8' : '#334155' }}>⚽ {f.name} (₺{f.pricePerHour}/Saat)</Text>
                   </TouchableOpacity>
                 ))}
+                
+                {/* 📅 TAKVİM BÖLÜMÜ */}
                 <Text style={styles.label}>2. Tarih Seçimi (Takvim)</Text>
                 {Platform.OS === 'web' ? (
                   <input
@@ -422,14 +425,50 @@ export default function App() {
                       <Text style={{ color: bookingForm.date ? '#1e293b' : '#94a3b8', fontSize: 15 }}>{bookingForm.date || 'Takvimden tarih seçiniz...'}</Text>
                       <Text>📅</Text>
                     </TouchableOpacity>
+                    {showDatePicker && (
+                      <DateTimePicker
+                        value={bookingForm.date ? new Date(bookingForm.date) : new Date()}
+                        mode="date" display="default" minimumDate={new Date()}
+                        onChange={(event, selectedDate) => {
+                          setShowDatePicker(false);
+                          if (selectedDate) setBookingForm({ ...bookingForm, date: selectedDate.toISOString().split('T')[0] });
+                        }}
+                      />
+                    )}
                   </>
                 )}
+
+                {/* ⏰ SAAT DROPDOWN BÖLÜMÜ (TAM GÜN) */}
                 <Text style={styles.label}>3. Saat Aralığı</Text>
                 <View style={{ zIndex: 100, marginBottom: 20 }}>
                   <TouchableOpacity style={styles.dropdownHeader} activeOpacity={0.8} onPress={() => setShowTimeDropdown(!showTimeDropdown)}>
                     <Text style={{ color: bookingForm.timeSlot ? '#1e293b' : '#94a3b8', fontSize: 15 }}>{bookingForm.timeSlot || 'Lütfen saat seçiniz...'}</Text>
                     <Text style={{ color: '#94a3b8', fontSize: 12 }}>{showTimeDropdown ? '▲' : '▼'}</Text>
                   </TouchableOpacity>
+
+                  {showTimeDropdown && (
+                    <View style={styles.dropdownList}>
+                      <ScrollView nestedScrollEnabled style={{ maxHeight: 180 }}>
+                        {[
+                          "09:00 - 10:00", "10:00 - 11:00", "11:00 - 12:00", "12:00 - 13:00",
+                          "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00",
+                          "17:00 - 18:00", "18:00 - 19:00", "19:00 - 20:00", "20:00 - 21:00",
+                          "21:00 - 22:00", "22:00 - 23:00", "23:00 - 00:00"
+                        ].map((slot, index) => (
+                          <TouchableOpacity
+                            key={slot}
+                            style={[styles.dropdownItem, index === 14 && { borderBottomWidth: 0 }]}
+                            onPress={() => {
+                              setBookingForm({ ...bookingForm, timeSlot: slot });
+                              setShowTimeDropdown(false);
+                            }}
+                          >
+                            <Text style={{ color: '#334155', fontSize: 15, fontWeight: bookingForm.timeSlot === slot ? 'bold' : 'normal' }}>⏰ {slot}</Text>
+                          </TouchableOpacity>
+                        ))}
+                      </ScrollView>
+                    </View>
+                  )}
                 </View>
                 <TouchableOpacity style={styles.btnBlue} onPress={handleCreateBooking}><Text style={styles.navBtnText}>Rezervasyon Yap</Text></TouchableOpacity>
               </View>
@@ -567,6 +606,7 @@ export default function App() {
               <Text style={[styles.tabBarIcon, (view === 'profile' || view === 'admin') && styles.activeIcon]}>📊</Text>
               <Text style={[styles.tabBarLabel, (view === 'profile' || view === 'admin') && styles.activeLabel]}>Panelim</Text>
             </TouchableOpacity>
+
             <TouchableOpacity style={styles.tabBarItem} onPress={() => { setSession(null); setView('home'); }}>
               <Text style={[styles.tabBarIcon, { color: '#ef4444' }]}>🚪</Text>
               <Text style={[styles.tabBarLabel, { color: '#ef4444' }]}>Çıkış Yap</Text>
